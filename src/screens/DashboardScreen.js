@@ -140,6 +140,9 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
             </div>
           </div>
           
+          <!-- Treemap Heatmap Section -->
+          ${renderTreemap(categories, dashboardData.expenses, dashboardData.lastMonthExpenses)}
+          
           <!-- Recent Expenses Section -->
           <div class="recent-expenses-section">
             <div class="recent-expenses-header">
@@ -162,9 +165,6 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
               </div>
             `}
           </div>
-          
-          <!-- Treemap Heatmap Section -->
-          ${renderTreemap(categories, dashboardData.expenses, dashboardData.lastMonthExpenses)}
           
         </div>
       </div>
