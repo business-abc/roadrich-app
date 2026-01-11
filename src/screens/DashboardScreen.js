@@ -156,7 +156,7 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
             </div>
             ${expenses.length > 0 ? `
               <div class="recent-expenses-list">
-                ${expenses.slice(0, 5).map(exp => renderExpenseItem(exp)).join('')}
+                ${expenses.slice(0, 3).map(exp => renderExpenseItem(exp)).join('')}
               </div>
             ` : `
               <div class="recent-expenses-empty">
