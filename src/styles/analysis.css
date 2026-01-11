@@ -1,0 +1,408 @@
+/* ============================================
+   ROADRICH - Analysis Screen Styles
+   Donut Chart + Ghost Curve
+   ============================================ */
+
+/* === Main Layout === */
+.analysis-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--color-bg-primary);
+    padding-bottom: calc(80px + var(--safe-area-bottom));
+    overflow-x: hidden;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    padding-top: calc(var(--space-lg) + var(--safe-area-top));
+}
+
+.analysis-back-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+}
+
+.analysis-back-btn:active {
+    transform: scale(0.95);
+}
+
+.analysis-back-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.analysis-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+}
+
+.analysis-loading {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === Time Selector === */
+.time-selector {
+    display: flex;
+    gap: var(--space-xs);
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.time-btn {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--glass-border);
+    transition: all var(--transition-fast);
+}
+
+.time-btn.active {
+    background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue));
+    color: var(--color-bg-primary);
+    border-color: transparent;
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+.time-btn:active {
+    transform: scale(0.98);
+}
+
+/* === Content === */
+.analysis-content {
+    flex: 1;
+    padding: 0 var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    overflow-y: auto;
+    transition: opacity var(--transition-fast);
+}
+
+.analysis-card {
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    border: 1px solid var(--glass-border);
+}
+
+.analysis-card-title {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: var(--font-medium);
+    margin-bottom: var(--space-md);
+}
+
+/* === Donut Chart === */
+.donut-chart-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.donut-chart {
+    width: 200px;
+    height: 200px;
+}
+
+.donut-segment {
+    cursor: pointer;
+    transition: stroke-width var(--transition-fast), filter var(--transition-fast);
+}
+
+.donut-segment:hover {
+    filter: brightness(1.2);
+}
+
+.donut-segment.active {
+    filter: brightness(1.3) drop-shadow(0 0 8px currentColor);
+}
+
+.donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    pointer-events: none;
+}
+
+.donut-center-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-xs);
+}
+
+.donut-center-amount {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+.donut-center-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+}
+
+.donut-empty {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary);
+    gap: var(--space-sm);
+}
+
+.donut-empty-icon {
+    font-size: 2rem;
+    opacity: 0.5;
+}
+
+/* Donut Legend */
+.donut-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.donut-legend-item:hover {
+    background: var(--color-bg-elevated);
+}
+
+.donut-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.donut-legend-icon {
+    font-size: var(--text-base);
+}
+
+.donut-legend-name {
+    flex: 1;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+}
+
+.donut-legend-amount {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+/* === Ghost Curve === */
+.ghost-curve-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    gap: var(--space-md);
+}
+
+.ghost-curve-header .analysis-card-title {
+    margin-bottom: 0;
+}
+
+.category-filter {
+    flex-shrink: 0;
+}
+
+.category-select {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--glass-border);
+    color: var(--color-text-primary);
+    max-width: 150px;
+}
+
+.ghost-curve-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.ghost-curve-svg {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+}
+
+.grid-line {
+    stroke: var(--glass-border);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+
+.curve-ghost {
+    fill: none;
+    stroke: var(--color-text-tertiary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    opacity: 0.5;
+}
+
+.curve-current {
+    fill: none;
+    stroke: var(--color-accent-cyan);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px var(--color-accent-cyan));
+}
+
+.axis-label {
+    font-size: 10px;
+    fill: var(--color-text-tertiary);
+    text-anchor: middle;
+}
+
+/* Ghost Curve Legend */
+.ghost-curve-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+}
+
+.legend-item .legend-line {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.legend-item.current .legend-line {
+    background: var(--color-accent-cyan);
+    box-shadow: 0 0 6px var(--color-accent-cyan);
+}
+
+.legend-item.ghost .legend-line {
+    background: var(--color-text-tertiary);
+    background: repeating-linear-gradient(90deg,
+            var(--color-text-tertiary) 0,
+            var(--color-text-tertiary) 4px,
+            transparent 4px,
+            transparent 8px);
+}
+
+.legend-amount {
+    font-family: var(--font-mono);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+/* Ghost Curve Insight */
+.ghost-curve-insight {
+    text-align: center;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    background: var(--color-bg-elevated);
+    color: var(--color-text-secondary);
+}
+
+.ghost-curve-insight.positive {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.ghost-curve-insight.negative {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 480px) {
+    .analysis-header {
+        padding: var(--space-md);
+        padding-top: calc(var(--space-md) + var(--safe-area-top));
+    }
+
+    .time-selector {
+        padding: 0 var(--space-md);
+    }
+
+    .time-btn {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: var(--text-xs);
+    }
+
+    .analysis-content {
+        padding: 0 var(--space-md);
+    }
+
+    .analysis-card {
+        padding: var(--space-md);
+    }
+
+    .donut-chart {
+        width: 160px;
+        height: 160px;
+    }
+
+    .donut-center-amount {
+        font-size: var(--text-lg);
+    }
+
+    .ghost-curve-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .category-select {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .ghost-curve-legend {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+}

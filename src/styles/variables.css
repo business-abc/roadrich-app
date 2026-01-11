@@ -1,0 +1,105 @@
+/* ============================================
+   ROADRICH - Design System Variables
+   Cockpit Financier / High-Tech Aesthetic
+   ============================================ */
+
+:root {
+  /* === Colors - Dark Mode Only === */
+  
+  /* Backgrounds */
+  --color-bg-primary: #121212;      /* Anthracite profond - Main background */
+  --color-bg-surface: #1E1E1E;      /* Gris sombre - Cards/Surfaces */
+  --color-bg-elevated: #252525;     /* Slightly elevated surfaces */
+  --color-bg-input: #2A2A2A;        /* Input backgrounds */
+  
+  /* Text */
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-tertiary: rgba(255, 255, 255, 0.5);
+  --color-text-disabled: rgba(255, 255, 255, 0.3);
+  
+  /* Accent Colors - Neon/Saturated */
+  --color-accent-cyan: #00F5D4;     /* Vert Cyber - Primary accent */
+  --color-accent-violet: #9B5DE5;   /* Violet Électrique */
+  --color-accent-coral: #FF6B6B;    /* Orange Corail */
+  --color-accent-blue: #00BBF9;     /* Bleu Électrique */
+  --color-accent-yellow: #FEE440;   /* Jaune Vif */
+  --color-accent-pink: #F15BB5;     /* Rose Néon */
+  
+  /* Semantic Colors */
+  --color-success: #00F5D4;
+  --color-warning: #FEE440;
+  --color-error: #FF4757;
+  --color-error-glow: rgba(255, 71, 87, 0.4);
+  
+  /* === Typography === */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 2rem;       /* 32px */
+  --text-4xl: 2.5rem;     /* 40px */
+  --text-5xl: 3rem;       /* 48px */
+  
+  /* Font Weights */
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* === Spacing === */
+  --space-xs: 0.25rem;    /* 4px */
+  --space-sm: 0.5rem;     /* 8px */
+  --space-md: 1rem;       /* 16px */
+  --space-lg: 1.5rem;     /* 24px */
+  --space-xl: 2rem;       /* 32px */
+  --space-2xl: 3rem;      /* 48px */
+  --space-3xl: 4rem;      /* 64px */
+  
+  /* === Border Radius (Pilule/Very Rounded) === */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+  
+  /* === Shadows & Effects === */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-cyan: 0 0 20px rgba(0, 245, 212, 0.3);
+  --shadow-glow-violet: 0 0 20px rgba(155, 93, 229, 0.3);
+  --shadow-glow-error: 0 0 20px rgba(255, 71, 87, 0.4);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(30, 30, 30, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(20px);
+  
+  /* === Transitions === */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+  --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* === Z-Index Scale === */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  
+  /* === Safe Areas (iOS) === */
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+}

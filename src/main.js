@@ -1,0 +1,618 @@
+/**
+ * ROADRICH - Main Application
+ * Router and state management
+ */
+
+// Styles
+import './styles/global.css';
+import './styles/welcome.css';
+import './styles/auth.css';
+import './styles/onboarding.css';
+import './styles/dashboard.css';
+import './styles/add-expense.css';
+import './styles/analysis.css';
+import './styles/expenses-list.css';
+
+// Supabase
+import { supabase, getCurrentUser, getProfile, onAuthStateChange, createCategory, updateCategory, deleteCategory } from './lib/supabase.js';
+
+// Screens
+import { renderWelcomeScreen } from './screens/WelcomeScreen.js';
+import { renderAuthScreen } from './screens/AuthScreen.js';
+import { renderOnboardingScreen } from './screens/OnboardingScreen.js';
+import { renderDashboardScreen } from './screens/DashboardScreen.js';
+import { renderAddExpenseScreen } from './screens/AddExpenseScreen.js';
+import { renderAnalysisScreen } from './screens/AnalysisScreen.js';
+import { renderExpensesListScreen } from './screens/ExpensesListScreen.js';
+
+// App State
+const state = {
+  user: null,
+  profile: null,
+  currentScreen: null,
+};
+
+// Main app container
+const app = document.querySelector('#app');
+
+// Initialize app
+async function init() {
+  console.log('🚀 Roadrich initializing...');
+
+  // Check for existing session
+  const user = await getCurrentUser();
+
+  if (user) {
+    state.user = user;
+
+    // Check if profile exists
+    const { data: profile } = await getProfile(user.id);
+
+    if (profile) {
+      state.profile = profile;
+      navigateTo('dashboard');
+    } else {
+      navigateTo('onboarding');
+    }
+  } else {
+    navigateTo('welcome');
+  }
+
+  // Listen for auth state changes
+  onAuthStateChange(async (event, session) => {
+    console.log('Auth event:', event);
+
+    if (event === 'SIGNED_OUT') {
+      state.user = null;
+      state.profile = null;
+      navigateTo('welcome');
+    }
+  });
+}
+
+// Navigation
+function navigateTo(screen, options = {}) {
+  state.currentScreen = screen;
+
+  switch (screen) {
+    case 'welcome':
+      renderWelcomeScreen(app, {
+        onSignIn: () => navigateTo('auth', { mode: 'signin' }),
+        onSignUp: () => navigateTo('auth', { mode: 'signup' }),
+      });
+      break;
+
+    case 'auth':
+      renderAuthScreen(app, {
+        mode: options.mode || 'signin',
+        onBack: () => navigateTo('welcome'),
+        onSuccess: async (data, isSignUp) => {
+          state.user = data.user;
+
+          if (isSignUp) {
+            // New user - go to onboarding
+            navigateTo('onboarding');
+          } else {
+            // Existing user - check for profile
+            const { data: profile } = await getProfile(data.user.id);
+
+            if (profile) {
+              state.profile = profile;
+              navigateTo('dashboard');
+            } else {
+              navigateTo('onboarding');
+            }
+          }
+        },
+      });
+      break;
+
+    case 'onboarding':
+      renderOnboardingScreen(app, {
+        userId: state.user.id,
+        onComplete: (profile) => {
+          state.profile = profile;
+          navigateTo('dashboard');
+        },
+      });
+      break;
+
+    case 'dashboard':
+      renderDashboardScreen(app, {
+        userId: state.user.id,
+        onLogout: () => {
+          state.user = null;
+          state.profile = null;
+          navigateTo('welcome');
+        },
+        onAddExpense: () => {
+          navigateTo('add-expense');
+        },
+        onAddCategory: () => {
+          showAddCategoryModal();
+        },
+        onEditCategory: (category) => {
+          showEditCategoryModal(category);
+        },
+        onAnalysis: () => {
+          navigateTo('analysis');
+        },
+        onExpensesList: () => {
+          navigateTo('expenses-list');
+        },
+      });
+      break;
+
+    case 'analysis':
+      renderAnalysisScreen(app, {
+        userId: state.user.id,
+        onBack: () => navigateTo('dashboard'),
+      });
+      break;
+
+    case 'add-expense':
+      renderAddExpenseScreen(app, {
+        userId: state.user.id,
+        onBack: () => navigateTo('dashboard'),
+        onSuccess: () => navigateTo('dashboard'),
+      });
+      break;
+
+    case 'expenses-list':
+      renderExpensesListScreen(app, {
+        userId: state.user.id,
+        onBack: () => navigateTo('dashboard'),
+      });
+      break;
+
+    default:
+      console.error('Unknown screen:', screen);
+      navigateTo('welcome');
+  }
+}
+
+// Category Modal
+function showAddCategoryModal() {
+  // Predefined icons and colors
+  const icons = [
+    '🏠', '🚗', '🍔', '🎭', '💊', '🛒',  // Home, Car, Food, Entertainment, Health, Shopping
+    '💡', '📱', '👕', '✈️', '🎓', '💼',  // Utilities, Phone, Clothes, Travel, Education, Work
+    '🎮', '🎥', '🎵', '📚', '☕', '🍽️',  // Gaming, Movies, Music, Books, Coffee, Restaurant
+    '💪', '💈', '💅', '🎁', '👶', '🐶',  // Gym, Barber, Beauty, Gifts, Baby, Pets
+    '🏖️', '⚽', '🚴', '🏟️', '🏘️', '💰',  // Beach, Sports, Bike, Stadium, Building, Money
+    '🍷', '🍰', '🛍️', '🛠️', '🔑', '📦'   // Wine, Cake, Cart, Tools, Keys, Package
+  ];
+  const colors = ['#00F5D4', '#9B5DE5', '#FF6B6B', '#00BBF9', '#FEE440', '#F15BB5'];
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content glass-card" style="
+      width: 90%;
+      max-width: 400px;
+      padding: var(--space-xl);
+      animation: scaleIn 0.3s ease;
+    ">
+      <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Nouvelle catégorie</h2>
+      
+      <form id="category-form" style="display: flex; flex-direction: column; gap: var(--space-lg);">
+        <!-- Name Input -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="category-name">Nom</label>
+          <input 
+            type="text" 
+            id="category-name" 
+            class="auth-input" 
+            placeholder="Ex: Alimentation"
+            required
+          />
+        </div>
+        
+        <!-- Icon Selection -->
+        <div>
+          <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Icône</label>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm);">
+            ${icons.map((icon, i) => `
+              <button type="button" class="icon-option ${i === 0 ? 'selected' : ''}" data-icon="${icon}" style="
+                width: 44px;
+                height: 44px;
+                border-radius: var(--radius-md);
+                background: var(--color-bg-input);
+                border: 2px solid ${i === 0 ? 'var(--color-accent-cyan)' : 'transparent'};
+                font-size: var(--text-lg);
+                cursor: pointer;
+                transition: all var(--transition-fast);
+              ">${icon}</button>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- Color Selection -->
+        <div>
+          <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Couleur</label>
+          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+            ${colors.map((color, i) => `
+              <button type="button" class="color-option ${i === 0 ? 'selected' : ''}" data-color="${color}" style="
+                width: 36px;
+                height: 36px;
+                border-radius: var(--radius-full);
+                background: ${color};
+                border: 3px solid ${i === 0 ? 'white' : 'transparent'};
+                cursor: pointer;
+                transition: all var(--transition-fast);
+              "></button>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- Budget Limit (Optional) -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="category-budget">Budget mensuel (optionnel)</label>
+          <div style="position: relative;">
+            <input 
+              type="text" 
+              inputmode="numeric"
+              id="category-budget" 
+              class="auth-input" 
+              placeholder="0"
+              style="text-align: right; padding-right: 40px; font-family: var(--font-mono);"
+            />
+            <span style="
+              position: absolute;
+              right: var(--space-md);
+              top: 50%;
+              transform: translateY(-50%);
+              color: var(--color-accent-cyan);
+              font-family: var(--font-mono);
+            ">€</span>
+          </div>
+        </div>
+        
+        <!-- Buttons -->
+        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-md);">
+          <button type="button" class="btn-secondary" id="cancel-category-btn" style="flex: 1;">
+            Annuler
+          </button>
+          <button type="submit" class="btn-primary" id="save-category-btn" style="flex: 1;">
+            Créer
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  // Add modal styles if not present
+  if (!document.getElementById('modal-styles')) {
+    const style = document.createElement('style');
+    style.id = 'modal-styles';
+    style.textContent = `
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: var(--z-modal);
+        padding: var(--space-lg);
+        animation: fadeIn 0.2s ease;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(modal);
+
+  // State
+  let selectedIcon = icons[0];
+  let selectedColor = colors[0];
+
+  // Icon selection
+  modal.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.querySelectorAll('.icon-option').forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('selected');
+      });
+      btn.style.borderColor = 'var(--color-accent-cyan)';
+      btn.classList.add('selected');
+      selectedIcon = btn.dataset.icon;
+    });
+  });
+
+  // Color selection
+  modal.querySelectorAll('.color-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.querySelectorAll('.color-option').forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('selected');
+      });
+      btn.style.borderColor = 'white';
+      btn.classList.add('selected');
+      selectedColor = btn.dataset.color;
+    });
+  });
+
+  // Budget input formatting
+  const budgetInput = modal.querySelector('#category-budget');
+  budgetInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value) {
+      value = parseInt(value, 10).toLocaleString('fr-FR').replace(/,/g, ' ');
+    }
+    e.target.value = value;
+  });
+
+  // Cancel
+  modal.querySelector('#cancel-category-btn').addEventListener('click', () => {
+    modal.remove();
+  });
+
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+
+  // Submit
+  modal.querySelector('#category-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = modal.querySelector('#category-name').value.trim();
+    const budgetValue = budgetInput.value.replace(/\s/g, '');
+    const budget = budgetValue ? parseInt(budgetValue, 10) : null;
+
+    if (!name) return;
+
+    const saveBtn = modal.querySelector('#save-category-btn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+
+    try {
+      await createCategory(state.user.id, name, selectedIcon, selectedColor, budget);
+      modal.remove();
+      // Refresh dashboard
+      navigateTo('dashboard');
+    } catch (error) {
+      console.error('Error creating category:', error);
+      alert('Erreur lors de la création de la catégorie');
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Créer';
+    }
+  });
+
+  // Focus on name input
+  modal.querySelector('#category-name').focus();
+}
+
+// Edit Category Modal
+function showEditCategoryModal(category) {
+  // Predefined icons and colors
+  const icons = [
+    '🏠', '🚗', '🍔', '🎭', '💊', '🛒',  // Home, Car, Food, Entertainment, Health, Shopping
+    '💡', '📱', '👕', '✈️', '🎓', '💼',  // Utilities, Phone, Clothes, Travel, Education, Work
+    '🎮', '🎥', '🎵', '📚', '☕', '🍽️',  // Gaming, Movies, Music, Books, Coffee, Restaurant
+    '💪', '💈', '💅', '🎁', '👶', '🐶',  // Gym, Barber, Beauty, Gifts, Baby, Pets
+    '🏖️', '⚽', '🚴', '🏟️', '🏘️', '💰',  // Beach, Sports, Bike, Stadium, Building, Money
+    '🍷', '🍰', '🛍️', '🛠️', '🔑', '📦'   // Wine, Cake, Cart, Tools, Keys, Package
+  ];
+  const colors = ['#00F5D4', '#9B5DE5', '#FF6B6B', '#00BBF9', '#FEE440', '#F15BB5'];
+
+  let selectedIcon = category.icon;
+  let selectedColor = category.color;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content glass-card" style="
+      width: 90%;
+      max-width: 400px;
+      padding: var(--space-xl);
+      animation: scaleIn 0.3s ease;
+    ">
+      <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Modifier la catégorie</h2>
+      
+      <form id="edit-category-form" style="display: flex; flex-direction: column; gap: var(--space-lg);">
+        <!-- Name Input -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="edit-category-name">Nom</label>
+          <input 
+            type="text" 
+            id="edit-category-name" 
+            class="auth-input" 
+            value="${category.name}"
+            required
+          />
+        </div>
+        
+        <!-- Icon Selection -->
+        <div>
+          <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Icône</label>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm);">
+            ${icons.map((icon) => `
+              <button type="button" class="icon-option ${icon === selectedIcon ? 'selected' : ''}" data-icon="${icon}" style="
+                width: 44px;
+                height: 44px;
+                border-radius: var(--radius-md);
+                background: var(--color-bg-input);
+                border: 2px solid ${icon === selectedIcon ? 'var(--color-accent-cyan)' : 'transparent'};
+                font-size: var(--text-lg);
+                cursor: pointer;
+                transition: all var(--transition-fast);
+              ">${icon}</button>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- Color Selection -->
+        <div>
+          <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Couleur</label>
+          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+            ${colors.map((color) => `
+              <button type="button" class="color-option ${color === selectedColor ? 'selected' : ''}" data-color="${color}" style="
+                width: 36px;
+                height: 36px;
+                border-radius: var(--radius-full);
+                background: ${color};
+                border: 3px solid ${color === selectedColor ? 'white' : 'transparent'};
+                cursor: pointer;
+                transition: all var(--transition-fast);
+              "></button>
+            `).join('')}
+          </div>
+        </div>
+        
+        <!-- Budget Limit -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="edit-category-budget">Budget mensuel (optionnel)</label>
+          <div style="position: relative;">
+            <input 
+              type="text" 
+              inputmode="numeric"
+              id="edit-category-budget" 
+              class="auth-input" 
+              value="${category.budget_limit || ''}"
+              style="text-align: right; padding-right: 40px; font-family: var(--font-mono);"
+            />
+            <span style="
+              position: absolute;
+              right: var(--space-md);
+              top: 50%;
+              transform: translateY(-50%);
+              color: var(--color-accent-cyan);
+              font-family: var(--font-mono);
+            ">€</span>
+          </div>
+        </div>
+        
+        <!-- Buttons -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-md); margin-top: var(--space-md);">
+          <button type="submit" class="btn-primary" id="save-edit-category-btn">
+            Enregistrer
+          </button>
+          <button type="button" class="expense-action-btn delete" id="delete-category-btn" style="margin-top: var(--space-sm);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+            Supprimer cette catégorie
+          </button>
+          <button type="button" class="btn-secondary" id="cancel-edit-category-btn">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Icon selection
+  modal.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.querySelectorAll('.icon-option').forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('selected');
+      });
+      btn.style.borderColor = 'var(--color-accent-cyan)';
+      btn.classList.add('selected');
+      selectedIcon = btn.dataset.icon;
+    });
+  });
+
+  // Color selection
+  modal.querySelectorAll('.color-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      modal.querySelectorAll('.color-option').forEach(b => {
+        b.style.borderColor = 'transparent';
+        b.classList.remove('selected');
+      });
+      btn.style.borderColor = 'white';
+      btn.classList.add('selected');
+      selectedColor = btn.dataset.color;
+    });
+  });
+
+  // Budget input formatting
+  const budgetInput = modal.querySelector('#edit-category-budget');
+  budgetInput.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value) {
+      value = parseInt(value, 10).toLocaleString('fr-FR').replace(/,/g, ' ');
+    }
+    e.target.value = value;
+  });
+
+  // Cancel
+  modal.querySelector('#cancel-edit-category-btn').addEventListener('click', () => {
+    modal.remove();
+  });
+
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+
+  // Delete category
+  modal.querySelector('#delete-category-btn').addEventListener('click', async () => {
+    if (!confirm('Supprimer cette catégorie ? Les dépenses associées seront conservées mais non catégorisées.')) return;
+
+    const deleteBtn = modal.querySelector('#delete-category-btn');
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div> Suppression...';
+
+    try {
+      await deleteCategory(category.id);
+      modal.remove();
+      navigateTo('dashboard');
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('Erreur lors de la suppression');
+      deleteBtn.disabled = false;
+    }
+  });
+
+  // Submit (update)
+  modal.querySelector('#edit-category-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = modal.querySelector('#edit-category-name').value.trim();
+    const budgetValue = budgetInput.value.replace(/\s/g, '');
+    const budget = budgetValue ? parseInt(budgetValue, 10) : null;
+
+    if (!name) return;
+
+    const saveBtn = modal.querySelector('#save-edit-category-btn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+
+    try {
+      await updateCategory(category.id, {
+        name,
+        icon: selectedIcon,
+        color: selectedColor,
+        budget_limit: budget,
+      });
+      modal.remove();
+      navigateTo('dashboard');
+    } catch (error) {
+      console.error('Error updating category:', error);
+      alert('Erreur lors de la mise à jour');
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Enregistrer';
+    }
+  });
+
+  // Focus on name input
+  modal.querySelector('#edit-category-name').focus();
+}
+
+// Start the app
+init();

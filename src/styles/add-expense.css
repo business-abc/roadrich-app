@@ -1,0 +1,773 @@
+/* ============================================
+   ROADRICH - Add Expense Screen Styles
+   Smart Stepper with Live Simulator
+   ============================================ */
+
+/* === Main Layout === */
+.add-expense-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--color-bg-primary);
+}
+
+/* === Header === */
+.add-expense-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    padding-top: calc(var(--space-lg) + var(--safe-area-top));
+}
+
+.add-expense-back-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    transition: background-color var(--transition-fast);
+}
+
+.add-expense-back-btn:hover {
+    background: var(--color-bg-elevated);
+}
+
+.add-expense-back-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.add-expense-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+}
+
+/* === Step Indicator === */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-elevated);
+    transition: all var(--transition-base);
+}
+
+.step-dot.active {
+    width: 24px;
+    background: linear-gradient(90deg, var(--color-accent-cyan), var(--color-accent-blue));
+}
+
+.step-dot.completed {
+    background: var(--color-accent-cyan);
+}
+
+/* ============================================
+   STEP 1: Category Selection
+   ============================================ */
+
+.step-category {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--space-lg);
+    animation: fadeIn 0.3s ease;
+}
+
+.step-category-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+/* Category Grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    padding-bottom: var(--space-xl);
+}
+
+.category-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg) var(--space-md);
+    background: var(--color-bg-surface);
+    border: 2px solid transparent;
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.category-grid-item:hover {
+    background: var(--color-bg-elevated);
+    transform: translateY(-2px);
+}
+
+.category-grid-item:active {
+    transform: scale(0.98);
+}
+
+.category-grid-item.selected {
+    border-color: var(--color-accent-cyan);
+    background: rgba(0, 245, 212, 0.1);
+}
+
+.category-grid-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+}
+
+.category-grid-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Empty state for no categories */
+.category-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.category-empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+    opacity: 0.7;
+}
+
+.category-empty-state-text {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+/* ============================================
+   STEP 2: Amount Input with Simulator
+   ============================================ */
+
+.step-amount {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Selected Category Display */
+.selected-category-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    margin: 0 var(--space-lg) var(--space-md);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+}
+
+.selected-category-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.selected-category-info {
+    flex: 1;
+}
+
+.selected-category-name {
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+}
+
+.selected-category-budget {
+    font-size: var(--text-sm);
+    color: var(--color-text-tertiary);
+}
+
+/* Chart Area */
+.simulator-chart-area {
+    flex: 1;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+}
+
+.simulator-chart-container {
+    flex: 1;
+    position: relative;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    overflow: hidden;
+}
+
+/* SVG Chart */
+.simulator-chart {
+    width: 100%;
+    height: 100%;
+    min-height: 150px;
+}
+
+.chart-grid-line {
+    stroke: var(--glass-border);
+    stroke-width: 1;
+}
+
+.chart-budget-line {
+    stroke: var(--color-text-tertiary);
+    stroke-width: 2;
+    stroke-dasharray: 8 4;
+}
+
+.chart-budget-zone {
+    fill: rgba(255, 71, 87, 0.1);
+}
+
+.chart-area {
+    fill: rgba(0, 245, 212, 0.15);
+}
+
+.chart-line {
+    fill: none;
+    stroke: var(--color-accent-cyan);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.chart-line.over-budget {
+    stroke: var(--color-error);
+}
+
+.chart-point {
+    fill: var(--color-accent-cyan);
+    stroke: var(--color-bg-primary);
+    stroke-width: 2;
+}
+
+.chart-point.new {
+    fill: var(--color-accent-cyan);
+    animation: pulse-point 1s ease infinite;
+}
+
+.chart-point.over-budget {
+    fill: var(--color-error);
+    animation: pulse-error 1s ease infinite;
+}
+
+@keyframes pulse-point {
+
+    0%,
+    100% {
+        r: 6;
+        filter: drop-shadow(0 0 4px var(--color-accent-cyan));
+    }
+
+    50% {
+        r: 8;
+        filter: drop-shadow(0 0 8px var(--color-accent-cyan));
+    }
+}
+
+@keyframes pulse-error {
+
+    0%,
+    100% {
+        r: 6;
+        filter: drop-shadow(0 0 4px var(--color-error));
+    }
+
+    50% {
+        r: 8;
+        filter: drop-shadow(0 0 12px var(--color-error));
+    }
+}
+
+.chart-x-label {
+    fill: var(--color-text-tertiary);
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.chart-budget-label {
+    fill: var(--color-text-tertiary);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Amount Display */
+.amount-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+}
+
+.amount-value {
+    font-family: var(--font-mono);
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    transition: color var(--transition-fast);
+}
+
+.amount-value.over-budget {
+    color: var(--color-error);
+}
+
+.amount-currency {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    color: var(--color-accent-cyan);
+    font-weight: var(--font-semibold);
+}
+
+/* Numeric Keypad */
+.numeric-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    padding-bottom: calc(var(--space-lg) + var(--safe-area-bottom));
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    border-top: 1px solid var(--glass-border);
+}
+
+.keypad-btn {
+    height: 64px;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    background: var(--color-bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.keypad-btn:hover {
+    background: var(--color-bg-input);
+}
+
+.keypad-btn:active {
+    transform: scale(0.95);
+    background: var(--color-bg-input);
+}
+
+.keypad-btn.delete {
+    background: transparent;
+}
+
+.keypad-btn.delete svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-text-secondary);
+}
+
+.keypad-btn.submit {
+    background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue));
+    color: var(--color-bg-primary);
+}
+
+.keypad-btn.submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.keypad-btn.submit:not(:disabled):hover {
+    box-shadow: 0 4px 20px rgba(0, 245, 212, 0.4);
+}
+
+.keypad-btn.submit svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* ============================================
+   STEP 3: Success Animation
+   ============================================ */
+
+.step-success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    animation: fadeIn 0.3s ease;
+}
+
+.success-icon {
+    width: 120px;
+    height: 120px;
+    margin-bottom: var(--space-xl);
+}
+
+.success-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.success-icon circle {
+    fill: none;
+    stroke: var(--color-accent-cyan);
+    stroke-width: 3;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: draw-circle 0.6s ease forwards;
+}
+
+.success-icon path {
+    fill: none;
+    stroke: var(--color-accent-cyan);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: draw-check 0.4s ease forwards 0.5s;
+}
+
+@keyframes draw-circle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes draw-check {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-amount {
+    font-family: var(--font-mono);
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--color-accent-cyan);
+    margin-bottom: var(--space-sm);
+    animation: scaleIn 0.5s ease forwards 0.4s;
+    opacity: 0;
+}
+
+.success-text {
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: var(--space-xs);
+    animation: slideUp 0.5s ease forwards 0.6s;
+    opacity: 0;
+}
+
+.success-subtext {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    text-align: center;
+    animation: slideUp 0.5s ease forwards 0.7s;
+    opacity: 0;
+}
+
+/* Success confetti effect */
+.success-confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: confetti-fall 1s ease forwards;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100px) rotate(720deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   Recurring Expense Toggle
+   ============================================ */
+
+.recurring-toggle-section {
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.recurring-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+}
+
+.recurring-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+}
+
+.recurring-toggle-label svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-accent-violet);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background: var(--color-bg-elevated);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.toggle-switch.active {
+    background: linear-gradient(90deg, var(--color-accent-cyan), var(--color-accent-blue));
+}
+
+.toggle-switch-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: white;
+    border-radius: 50%;
+    transition: transform var(--transition-fast);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-switch-knob {
+    transform: translateX(24px);
+}
+
+/* Date Picker for Recurring */
+.recurring-date-picker {
+    margin-top: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    animation: slideDown 0.3s ease;
+}
+
+.recurring-date-label {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-sm);
+    display: block;
+}
+
+.recurring-date-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-xs);
+}
+
+.recurring-date-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    color: var(--color-text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.recurring-date-btn:hover {
+    background: var(--color-bg-input);
+}
+
+.recurring-date-btn.selected {
+    background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue));
+    color: var(--color-bg-primary);
+}
+
+/* ============================================
+   Expense Detail Modal
+   ============================================ */
+
+.expense-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: var(--z-modal);
+    animation: fadeIn 0.2s ease;
+}
+
+.expense-detail-content {
+    width: 100%;
+    max-width: 500px;
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    padding: var(--space-xl);
+    padding-bottom: calc(var(--space-xl) + var(--safe-area-bottom));
+    animation: slideUp 0.3s ease;
+}
+
+.expense-detail-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.expense-detail-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.expense-detail-info {
+    flex: 1;
+}
+
+.expense-detail-category {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+}
+
+.expense-detail-date {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+}
+
+.expense-detail-amount {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+.expense-detail-badges {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.expense-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(155, 93, 229, 0.2);
+    color: var(--color-accent-violet);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-full);
+}
+
+.expense-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+.expense-detail-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.expense-action-btn {
+    width: 100%;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    transition: all var(--transition-fast);
+}
+
+.expense-action-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.expense-action-btn.delete {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--color-error);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+.expense-action-btn.delete:hover {
+    background: rgba(255, 71, 87, 0.2);
+}
+
+.expense-action-btn.close {
+    background: var(--color-bg-elevated);
+    color: var(--color-text-primary);
+}
+
+.expense-action-btn.close:hover {
+    background: var(--color-bg-input);
+}

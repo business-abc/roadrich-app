@@ -1,0 +1,194 @@
+/* ============================================
+   ROADRICH - Welcome Screen Styles
+   ============================================ */
+
+.welcome-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: var(--space-xl);
+    background: var(--color-bg-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background gradient effect */
+.welcome-screen::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center,
+            rgba(0, 245, 212, 0.08) 0%,
+            rgba(155, 93, 229, 0.05) 30%,
+            transparent 70%);
+    animation: rotate-bg 30s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate-bg {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Logo Container */
+.welcome-logo-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+}
+
+/* App Name */
+.welcome-title {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-weight: var(--font-bold);
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg,
+            var(--color-accent-cyan) 0%,
+            var(--color-accent-blue) 50%,
+            var(--color-accent-violet) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    animation: title-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes title-glow {
+    from {
+        filter: drop-shadow(0 0 10px rgba(0, 245, 212, 0.3));
+    }
+
+    to {
+        filter: drop-shadow(0 0 20px rgba(155, 93, 229, 0.4));
+    }
+}
+
+/* Tagline */
+.welcome-tagline {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-align: center;
+}
+
+/* Buttons Container */
+.welcome-buttons {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 320px;
+}
+
+.welcome-btn {
+    width: 100%;
+    padding: var(--space-md) var(--space-xl);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-btn-primary {
+    background: linear-gradient(135deg, var(--color-accent-cyan), var(--color-accent-blue));
+    color: var(--color-bg-primary);
+    border: none;
+}
+
+.welcome-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    transition: left 0.5s ease;
+}
+
+.welcome-btn-primary:hover::before {
+    left: 100%;
+}
+
+.welcome-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 245, 212, 0.3);
+}
+
+.welcome-btn-primary:active {
+    transform: translateY(0);
+}
+
+.welcome-btn-secondary {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid var(--glass-border);
+}
+
+.welcome-btn-secondary:hover {
+    background: var(--color-bg-elevated);
+    border-color: var(--color-text-tertiary);
+}
+
+/* Decorative elements */
+.welcome-decoration {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.welcome-decoration-1 {
+    width: 200px;
+    height: 200px;
+    background: var(--color-accent-cyan);
+    top: 10%;
+    right: -50px;
+    opacity: 0.15;
+}
+
+.welcome-decoration-2 {
+    width: 150px;
+    height: 150px;
+    background: var(--color-accent-violet);
+    bottom: 20%;
+    left: -30px;
+    opacity: 0.15;
+}
+
+/* Entrance animations */
+.welcome-screen .welcome-logo-container {
+    animation: slideUp 0.8s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+.welcome-screen .welcome-buttons {
+    animation: slideUp 0.8s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+}
