@@ -319,8 +319,13 @@
     max-width: 24px;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     background: var(--color-bg-elevated);
-    transition: height 0.5s ease, background 0.3s ease;
+    transition: height 0.5s ease, background 0.3s ease, transform 0.2s ease;
     min-height: 4px;
+    cursor: pointer;
+}
+
+.bar-chart-bar:hover {
+    transform: scaleY(1.05);
 }
 
 .bar-chart-bar.active {
@@ -329,16 +334,24 @@
 }
 
 .bar-chart-bar.has-expense {
-    background: var(--color-accent-violet);
+    background: linear-gradient(180deg, var(--color-accent-blue), #3B82F6);
+}
+
+.bar-chart-bar.selected {
+    background: linear-gradient(180deg, var(--color-accent-cyan), var(--color-accent-blue));
+    box-shadow: 0 0 15px rgba(0, 245, 212, 0.5);
+    transform: scaleY(1.08);
 }
 
 .bar-chart-label {
     font-size: var(--text-xs);
     color: var(--color-text-tertiary);
     font-weight: var(--font-medium);
+    transition: color 0.2s ease;
 }
 
-.bar-chart-label.active {
+.bar-chart-label.active,
+.bar-chart-label.selected {
     color: var(--color-accent-cyan);
 }
 

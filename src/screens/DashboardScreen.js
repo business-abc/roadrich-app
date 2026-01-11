@@ -124,12 +124,12 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
           <!-- Weekly Flow Card -->
           <div class="weekly-flow-card">
             <div class="weekly-flow-header">
-              <span class="weekly-flow-title">7 derniers jours</span>
-              <span class="weekly-flow-total">${formatCurrency(weeklyData.total)}</span>
+              <span class="weekly-flow-title" id="weekly-title">7 derniers jours</span>
+              <span class="weekly-flow-total" id="weekly-total">${formatCurrency(weeklyData.total)}</span>
             </div>
             <div class="bar-chart">
               ${weeklyData.days.map((day, index) => `
-                <div class="bar-chart-item">
+                <div class="bar-chart-item" data-day-index="${index}" data-day-label="${day.fullLabel || day.label}" data-day-amount="${day.amount}">
                   <div class="bar-chart-bar-wrapper">
                     <div class="bar-chart-bar ${day.isToday ? 'active' : (day.amount > 0 ? 'has-expense' : '')}" 
                          style="height: ${day.heightPercent}%"></div>
@@ -480,6 +480,48 @@ function setupEventListeners(container, { userId, onLogout, onAddExpense, onAddC
       }
     });
   });
+
+  // Bar chart click handlers (show daily amount)
+  let selectedDayIndex = null;
+  const weeklyTitle = container.querySelector('#weekly-title');
+  const weeklyTotal = container.querySelector('#weekly-total');
+  const originalTitle = '7 derniers jours';
+
+  // Store weekly total for reset
+  const weeklyTotalAmount = Array.from(container.querySelectorAll('.bar-chart-item'))
+    .reduce((sum, item) => sum + parseFloat(item.dataset.dayAmount || 0), 0);
+
+  container.querySelectorAll('.bar-chart-item').forEach(item => {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => {
+      const index = parseInt(item.dataset.dayIndex);
+      const amount = parseFloat(item.dataset.dayAmount || 0);
+      const label = item.dataset.dayLabel;
+      const bar = item.querySelector('.bar-chart-bar');
+      const barLabel = item.querySelector('.bar-chart-label');
+
+      // If clicking the same day, reset to total
+      if (selectedDayIndex === index) {
+        selectedDayIndex = null;
+        weeklyTitle.textContent = originalTitle;
+        weeklyTotal.textContent = formatCurrency(weeklyTotalAmount);
+
+        // Remove selected class from all
+        container.querySelectorAll('.bar-chart-bar').forEach(b => b.classList.remove('selected'));
+        container.querySelectorAll('.bar-chart-label').forEach(l => l.classList.remove('selected'));
+      } else {
+        selectedDayIndex = index;
+        weeklyTitle.textContent = label;
+        weeklyTotal.textContent = formatCurrency(amount);
+
+        // Update selected state
+        container.querySelectorAll('.bar-chart-bar').forEach(b => b.classList.remove('selected'));
+        container.querySelectorAll('.bar-chart-label').forEach(l => l.classList.remove('selected'));
+        bar.classList.add('selected');
+        barLabel.classList.add('selected');
+      }
+    });
+  });
 }
 
 async function showExpenseDetailModal(expense, userId) {
@@ -715,6 +757,7 @@ async function getWeeklyData(userId) {
       date: dateStr,
       amount,
       label: getDayLabel(date, i === 0),
+      fullLabel: getFullDayLabel(date, i === 0),
       isToday: i === 0,
     });
   }
@@ -738,6 +781,12 @@ function getDayLabel(date, isToday) {
   if (isToday) return 'Auj.';
   const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
   return days[date.getDay()];
+}
+
+function getFullDayLabel(date, isToday) {
+  if (isToday) return "Aujourd'hui";
+  const options = { weekday: 'long', day: 'numeric', month: 'short' };
+  return date.toLocaleDateString('fr-FR', options);
 }
 
 function formatCurrency(amount) {
