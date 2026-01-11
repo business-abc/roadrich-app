@@ -137,8 +137,8 @@ function navigateTo(screen, options = {}) {
         onAnalysis: () => {
           navigateTo('analysis');
         },
-        onExpensesList: () => {
-          navigateTo('expenses-list');
+        onExpensesList: (categoryId) => {
+          navigateTo('expenses-list', { categoryId });
         },
       });
       break;
@@ -162,6 +162,7 @@ function navigateTo(screen, options = {}) {
       renderExpensesListScreen(app, {
         userId: state.user.id,
         onBack: () => navigateTo('dashboard'),
+        initialCategoryId: options?.categoryId || null,
       });
       break;
 

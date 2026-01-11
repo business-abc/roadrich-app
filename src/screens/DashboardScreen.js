@@ -469,14 +469,13 @@ function setupEventListeners(container, { userId, onLogout, onAddExpense, onAddC
     });
   });
 
-  // Category item click handlers (for edit)
+  // Category item click handlers (navigate to filtered expenses list)
   container.querySelectorAll('.category-item:not(.expense-item)').forEach(item => {
     item.style.cursor = 'pointer';
     item.addEventListener('click', () => {
       const categoryId = item.dataset.categoryId;
-      const category = dashboardData.categories.find(c => c.id === categoryId);
-      if (category && onEditCategory) {
-        onEditCategory(category);
+      if (categoryId && onExpensesList) {
+        onExpensesList(categoryId); // Pass category ID to filter
       }
     });
   });

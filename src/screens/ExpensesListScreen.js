@@ -13,9 +13,12 @@ let categoriesData = null;
 let container = null;
 let callbacks = null;
 
-export async function renderExpensesListScreen(containerEl, { userId, onBack, onEditExpense }) {
+export async function renderExpensesListScreen(containerEl, { userId, onBack, onEditExpense, initialCategoryId }) {
   container = containerEl;
   callbacks = { userId, onBack, onEditExpense };
+
+  // Set initial category filter if provided
+  selectedCategory = initialCategoryId || null;
 
   // Show loading state
   container.innerHTML = `
