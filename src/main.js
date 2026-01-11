@@ -190,8 +190,11 @@ function showAddCategoryModal() {
     <div class="modal-content glass-card" style="
       width: 90%;
       max-width: 400px;
-      padding: var(--space-xl);
+      max-height: 90vh;
+      padding: var(--space-lg);
       animation: scaleIn 0.3s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
     ">
       <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Nouvelle catégorie</h2>
       
@@ -211,17 +214,29 @@ function showAddCategoryModal() {
         <!-- Icon Selection -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Icône</label>
-          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm);">
+          <div style="
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 4px;
+            margin: -4px;
+          ">
             ${icons.map((icon, i) => `
               <button type="button" class="icon-option ${i === 0 ? 'selected' : ''}" data-icon="${icon}" style="
-                width: 44px;
-                height: 44px;
+                width: 100%;
+                aspect-ratio: 1;
+                max-width: 40px;
                 border-radius: var(--radius-md);
                 background: var(--color-bg-input);
                 border: 2px solid ${i === 0 ? 'var(--color-accent-cyan)' : 'transparent'};
-                font-size: var(--text-lg);
+                font-size: 1.1rem;
                 cursor: pointer;
                 transition: all var(--transition-fast);
+                display: flex;
+                align-items: center;
+                justify-content: center;
               ">${icon}</button>
             `).join('')}
           </div>
@@ -230,16 +245,17 @@ function showAddCategoryModal() {
         <!-- Color Selection -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Couleur</label>
-          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             ${colors.map((color, i) => `
               <button type="button" class="color-option ${i === 0 ? 'selected' : ''}" data-color="${color}" style="
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
                 border-radius: var(--radius-full);
                 background: ${color};
                 border: 3px solid ${i === 0 ? 'white' : 'transparent'};
                 cursor: pointer;
                 transition: all var(--transition-fast);
+                flex-shrink: 0;
               "></button>
             `).join('')}
           </div>
@@ -412,8 +428,11 @@ function showEditCategoryModal(category) {
     <div class="modal-content glass-card" style="
       width: 90%;
       max-width: 400px;
-      padding: var(--space-xl);
+      max-height: 90vh;
+      padding: var(--space-lg);
       animation: scaleIn 0.3s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
     ">
       <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Modifier la catégorie</h2>
       
@@ -433,17 +452,29 @@ function showEditCategoryModal(category) {
         <!-- Icon Selection -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Icône</label>
-          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-sm);">
+          <div style="
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 4px;
+            margin: -4px;
+          ">
             ${icons.map((icon) => `
               <button type="button" class="icon-option ${icon === selectedIcon ? 'selected' : ''}" data-icon="${icon}" style="
-                width: 44px;
-                height: 44px;
+                width: 100%;
+                aspect-ratio: 1;
+                max-width: 40px;
                 border-radius: var(--radius-md);
                 background: var(--color-bg-input);
                 border: 2px solid ${icon === selectedIcon ? 'var(--color-accent-cyan)' : 'transparent'};
-                font-size: var(--text-lg);
+                font-size: 1.1rem;
                 cursor: pointer;
                 transition: all var(--transition-fast);
+                display: flex;
+                align-items: center;
+                justify-content: center;
               ">${icon}</button>
             `).join('')}
           </div>
@@ -452,16 +483,17 @@ function showEditCategoryModal(category) {
         <!-- Color Selection -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Couleur</label>
-          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             ${colors.map((color) => `
               <button type="button" class="color-option ${color === selectedColor ? 'selected' : ''}" data-color="${color}" style="
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
                 border-radius: var(--radius-full);
                 background: ${color};
                 border: 3px solid ${color === selectedColor ? 'white' : 'transparent'};
                 cursor: pointer;
                 transition: all var(--transition-fast);
+                flex-shrink: 0;
               "></button>
             `).join('')}
           </div>
