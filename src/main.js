@@ -140,6 +140,9 @@ function navigateTo(screen, options = {}) {
         onExpensesList: (categoryId) => {
           navigateTo('expenses-list', { categoryId });
         },
+        onManageCategories: () => {
+          showCategoriesModal();
+        },
       });
       break;
 
@@ -173,7 +176,7 @@ function navigateTo(screen, options = {}) {
 }
 
 // Category Modal
-function showAddCategoryModal() {
+function showAddCategoryModal(initialMode = 'expense') {
   // Predefined icons and colors
   const icons = [
     '🏠', '🚗', '🍔', '🎭', '💊', '🛒',  // Home, Car, Food, Entertainment, Health, Shopping
@@ -184,6 +187,20 @@ function showAddCategoryModal() {
     '🍷', '🍰', '🛍️', '🛠️', '🔑', '📦'   // Wine, Cake, Cart, Tools, Keys, Package
   ];
   const colors = ['#00F5D4', '#9B5DE5', '#FF6B6B', '#00BBF9', '#FEE440', '#F15BB5'];
+
+  // State
+  let selectedIcon = icons[0];
+  let selectedColor = colors[0];
+  let selectedType = initialMode;
+
+  // Pre-calculate initial toggle styles based on mode
+  const isSavingsInit = initialMode === 'savings';
+  const initialBgLeft = isSavingsInit ? 'calc(50% + 0px)' : '4px';
+  const initialBgColor = isSavingsInit ? '#10B981' : 'var(--color-accent-cyan)';
+  const expenseColor = isSavingsInit ? 'var(--color-text-secondary)' : 'var(--color-bg-primary)';
+  const savingsColor = isSavingsInit ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)';
+  const expenseActive = isSavingsInit ? '' : 'active';
+  const savingsActive = isSavingsInit ? 'active' : '';
 
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
@@ -716,6 +733,167 @@ function showEditCategoryModal(category) {
 
   // Focus on name input
   modal.querySelector('#edit-category-name').focus();
+}
+
+// Categories Management Modal
+async function showCategoriesModal() {
+  // Fetch categories
+  const { data: categories } = await getCategories(state.user.id);
+
+  const expenseCategories = (categories || []).filter(c => c.type !== 'savings');
+  const savingsCategories = (categories || []).filter(c => c.type === 'savings');
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal-content glass-card" style="
+      width: 90%;
+      max-width: 450px;
+      max-height: 85vh;
+      padding: var(--space-lg);
+      animation: scaleIn 0.3s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+    ">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+        <h2 style="font-size: var(--text-xl);">Mes catégories</h2>
+        <button class="modal-close-btn" id="close-modal-btn" style="background: transparent; padding: var(--space-sm);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Expense Categories -->
+      <div style="margin-bottom: var(--space-lg);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+          <h3 style="font-size: var(--text-sm); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.1em;">Dépenses</h3>
+          <button class="category-add-btn" id="add-expense-cat-btn" style="font-size: var(--text-xs);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Ajouter
+          </button>
+        </div>
+        <div class="categories-list" style="display: flex; flex-direction: column; gap: var(--space-sm);">
+          ${expenseCategories.length > 0 ? expenseCategories.map(cat => `
+            <div class="category-item" data-id="${cat.id}" style="
+              display: flex;
+              align-items: center;
+              gap: var(--space-md);
+              padding: var(--space-md);
+              background: var(--color-bg-elevated);
+              border-radius: var(--radius-lg);
+              cursor: pointer;
+              transition: all var(--transition-fast);
+            ">
+              <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: var(--radius-md);
+                background: ${cat.color}20;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+              ">${cat.icon}</div>
+              <div style="flex: 1;">
+                <div style="font-weight: var(--font-medium);">${cat.name}</div>
+                ${cat.budget_limit ? `<div style="font-size: var(--text-xs); color: var(--color-text-tertiary);">Budget: ${cat.budget_limit.toLocaleString('fr-FR')} €</div>` : ''}
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: var(--color-text-tertiary);">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          `).join('') : '<div style="color: var(--color-text-tertiary); text-align: center; padding: var(--space-md);">Aucune catégorie de dépense</div>'}
+        </div>
+      </div>
+      
+      <!-- Savings Categories -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md);">
+          <h3 style="font-size: var(--text-sm); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.1em;">Épargne</h3>
+          <button class="category-add-btn" id="add-savings-cat-btn" style="font-size: var(--text-xs); color: #10B981;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Ajouter
+          </button>
+        </div>
+        <div class="categories-list" style="display: flex; flex-direction: column; gap: var(--space-sm);">
+          ${savingsCategories.length > 0 ? savingsCategories.map(cat => `
+            <div class="category-item" data-id="${cat.id}" style="
+              display: flex;
+              align-items: center;
+              gap: var(--space-md);
+              padding: var(--space-md);
+              background: var(--color-bg-elevated);
+              border-radius: var(--radius-lg);
+              cursor: pointer;
+              transition: all var(--transition-fast);
+              border-left: 3px solid #10B981;
+            ">
+              <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: var(--radius-md);
+                background: #10B98120;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+              ">${cat.icon}</div>
+              <div style="flex: 1;">
+                <div style="font-weight: var(--font-medium);">${cat.name}</div>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; color: var(--color-text-tertiary);">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          `).join('') : '<div style="color: var(--color-text-tertiary); text-align: center; padding: var(--space-md);">Aucune catégorie d\'épargne</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Close button
+  modal.querySelector('#close-modal-btn')?.addEventListener('click', () => {
+    modal.remove();
+  });
+
+  // Click outside to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+
+  // Add expense category
+  modal.querySelector('#add-expense-cat-btn')?.addEventListener('click', () => {
+    modal.remove();
+    showAddCategoryModal('expense');
+  });
+
+  // Add savings category
+  modal.querySelector('#add-savings-cat-btn')?.addEventListener('click', () => {
+    modal.remove();
+    showAddCategoryModal('savings');
+  });
+
+  // Click on category to edit
+  modal.querySelectorAll('.category-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const categoryId = item.dataset.id;
+      const category = categories.find(c => c.id === categoryId);
+      if (category) {
+        modal.remove();
+        showEditCategoryModal(category);
+      }
+    });
+  });
 }
 
 // Start the app
