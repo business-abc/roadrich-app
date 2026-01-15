@@ -12,6 +12,7 @@ import './styles/dashboard.css';
 import './styles/add-expense.css';
 import './styles/analysis.css';
 import './styles/expenses-list.css';
+import './styles/categories.css';
 
 // Supabase
 import { supabase, getCurrentUser, getProfile, onAuthStateChange, createCategory, updateCategory, deleteCategory, getCategories } from './lib/supabase.js';
@@ -24,6 +25,7 @@ import { renderDashboardScreen } from './screens/DashboardScreen.js';
 import { renderAddExpenseScreen } from './screens/AddExpenseScreen.js';
 import { renderAnalysisScreen } from './screens/AnalysisScreen.js';
 import { renderExpensesListScreen } from './screens/ExpensesListScreen.js';
+import { renderCategoriesScreen } from './screens/CategoriesScreen.js';
 
 // App State
 const state = {
@@ -141,7 +143,7 @@ function navigateTo(screen, options = {}) {
           navigateTo('expenses-list', { categoryId });
         },
         onManageCategories: () => {
-          showCategoriesModal();
+          navigateTo('categories');
         },
       });
       break;
@@ -166,6 +168,19 @@ function navigateTo(screen, options = {}) {
         userId: state.user.id,
         onBack: () => navigateTo('dashboard'),
         initialCategoryId: options?.categoryId || null,
+      });
+      break;
+
+    case 'categories':
+      renderCategoriesScreen(app, {
+        userId: state.user.id,
+        onBack: () => navigateTo('dashboard'),
+        onEditCategory: (category) => {
+          showEditCategoryModal(category);
+        },
+        onAddCategory: (mode) => {
+          showAddCategoryModal(mode);
+        },
       });
       break;
 

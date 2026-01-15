@@ -1,0 +1,215 @@
+/**
+ * ROADRICH - Categories Screen Styles
+ */
+
+.categories-screen {
+    min-height: 100vh;
+    background: var(--color-bg-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+.categories-loading {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Header */
+.categories-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    padding-top: calc(var(--space-lg) + var(--safe-area-top));
+    background: var(--color-bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.categories-back-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.categories-back-btn svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-primary);
+}
+
+.categories-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+/* Content */
+.categories-content {
+    flex: 1;
+    padding: 0 var(--space-lg) var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+/* Section */
+.category-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.category-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-section-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.category-add-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-accent-cyan);
+    background: transparent;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.category-add-btn:hover {
+    background: rgba(0, 245, 212, 0.1);
+}
+
+.category-add-btn.savings {
+    color: #10B981;
+}
+
+.category-add-btn.savings:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Category List */
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.category-empty {
+    padding: var(--space-xl);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    background: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--glass-border);
+}
+
+/* Category Item */
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.category-item:hover {
+    background: var(--color-bg-elevated);
+    transform: translateX(4px);
+}
+
+.category-item.savings {
+    border-left: 3px solid #10B981;
+}
+
+.category-item-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.category-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.category-item-name {
+    font-weight: var(--font-medium);
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-item-budget {
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    margin-top: 2px;
+}
+
+.category-item-actions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.category-edit-btn,
+.category-delete-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.category-edit-btn svg,
+.category-delete-btn svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-secondary);
+}
+
+.category-edit-btn:hover {
+    background: var(--color-accent-cyan);
+}
+
+.category-edit-btn:hover svg {
+    color: var(--color-bg-primary);
+}
+
+.category-delete-btn:hover {
+    background: var(--color-error);
+}
+
+.category-delete-btn:hover svg {
+    color: white;
+}
