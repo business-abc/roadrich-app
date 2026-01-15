@@ -286,7 +286,8 @@ function renderStep2(stepContent, { userId, onBack, onSuccess, categories }) {
         </div>
       </div>
       
-      <!-- Recurring Toggle -->
+      <!-- Recurring Toggle (only for expenses) -->
+      ${mode === 'expense' ? `
       <div class="recurring-toggle-section">
         <div class="recurring-toggle-container">
           <div style="display: flex; flex-direction: column; gap: 2px;">
@@ -305,6 +306,7 @@ function renderStep2(stepContent, { userId, onBack, onSuccess, categories }) {
           </button>
         </div>
       </div>
+      ` : ''}
       
       <!-- Description Input -->
       <div class="recurring-toggle-section">
@@ -382,11 +384,14 @@ function renderStep2(stepContent, { userId, onBack, onSuccess, categories }) {
   });
 
   // Recurring toggle handler
-  recurringToggle.addEventListener('click', () => {
-    isRecurring = !isRecurring;
-    recurringToggle.classList.toggle('active', isRecurring);
-    recurringInfo.style.display = isRecurring ? 'block' : 'none';
-  });
+  // Recurring toggle handler
+  if (recurringToggle) {
+    recurringToggle.addEventListener('click', () => {
+      isRecurring = !isRecurring;
+      recurringToggle.classList.toggle('active', isRecurring);
+      if (recurringInfo) recurringInfo.style.display = isRecurring ? 'block' : 'none';
+    });
+  }
 
   // Keypad number buttons
   stepContent.querySelectorAll('.keypad-btn[data-value]').forEach(btn => {
@@ -533,7 +538,7 @@ function buildChartData() {
 function updateAmountDisplay(displayEl, submitBtn, budgetLimit, currentSpent) {
   const amountNum = parseFloat(amount) || 0;
   const newTotal = currentSpent + amountNum;
-  const isOverBudget = budgetLimit > 0 && newTotal > budgetLimit;
+  const isOverBudget = mode === 'expense' && budgetLimit > 0 && newTotal > budgetLimit;
 
   displayEl.textContent = amount || '0';
   displayEl.classList.toggle('over-budget', isOverBudget);
@@ -551,104 +556,158 @@ function updateChart(stepContent, budgetLimit, currentSpent) {
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
-  const now = new Date();
-  const today = now.getDate();
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-
+  const isSavings = mode === 'savings';
   const amountNum = parseFloat(amount) || 0;
-  const projectedTotal = currentSpent + amountNum;
 
-  // Calculate Y scale
-  const maxY = Math.max(budgetLimit || 0, projectedTotal, currentSpent) * 1.2 || 100;
-
-  // Build path points
+  let maxY = 100;
   let pathPoints = [];
   let areaPoints = [];
-
-  chartData.forEach((d, i) => {
-    if (d.isPast || d.isToday) {
-      const x = padding.left + (d.day / daysInMonth) * chartWidth;
-      const y = padding.top + chartHeight - (d.cumulative / maxY) * chartHeight;
-      pathPoints.push({ x, y, day: d.day, cumulative: d.cumulative });
-      areaPoints.push({ x, y });
-    }
-  });
-
-  // Add projected point for today if amount entered
   let projectedPoint = null;
-  if (amountNum > 0) {
-    const x = padding.left + (today / daysInMonth) * chartWidth;
-    const y = padding.top + chartHeight - (projectedTotal / maxY) * chartHeight;
-    projectedPoint = { x, y, cumulative: projectedTotal };
-  }
+  let chartContent = '';
+  let axisLabels = '';
+  let budgetLine = '';
 
-  // Build path string
-  let pathD = '';
-  if (pathPoints.length > 0) {
-    pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
-    for (let i = 1; i < pathPoints.length; i++) {
-      pathD += ` L ${pathPoints[i].x} ${pathPoints[i].y}`;
-    }
-    if (projectedPoint) {
-      pathD += ` L ${projectedPoint.x} ${projectedPoint.y}`;
-    }
-  }
+  if (isSavings) {
+    // --- SAVINGS MODE: Annual Projection ---
+    // Simulate savings growth over 12 months
+    const months = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const currentMonthIndex = new Date().getMonth();
 
-  // Build area path
-  let areaD = '';
-  if (areaPoints.length > 0) {
-    const allPoints = [...areaPoints];
-    if (projectedPoint) allPoints.push(projectedPoint);
+    // Calculate cumulative savings if user saves this amount monthly for the rest of the year
+    let cumulative = 0; // Start from 0 or existing savings (simplified to 0 for this view)
 
-    areaD = `M ${allPoints[0].x} ${padding.top + chartHeight}`;
-    allPoints.forEach(p => {
-      areaD += ` L ${p.x} ${p.y}`;
+    // Generate 12 points
+    const projectionData = months.map((m, i) => {
+      // Past months: 0 (or real data if we had it loaded)
+      // Current month: +amount
+      // Future months: +amount * (months left)
+      if (i >= currentMonthIndex) {
+        cumulative += amountNum;
+      }
+      return { month: m, value: cumulative, isFuture: i > currentMonthIndex, isCurrent: i === currentMonthIndex };
     });
-    areaD += ` L ${allPoints[allPoints.length - 1].x} ${padding.top + chartHeight} Z`;
+
+    maxY = Math.max(100, projectionData[11].value * 1.1);
+
+    // Build points
+    projectionData.forEach((d, i) => {
+      const x = padding.left + (i / 11) * chartWidth;
+      const y = padding.top + chartHeight - (d.value / maxY) * chartHeight;
+      pathPoints.push({ x, y, ...d });
+      areaPoints.push({ x, y });
+    });
+
+    // Build path
+    let pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
+    pathPoints.forEach(p => pathD += ` L ${p.x} ${p.y}`);
+
+    let areaD = `M ${areaPoints[0].x} ${padding.top + chartHeight}`;
+    areaPoints.forEach(p => areaD += ` L ${p.x} ${p.y}`);
+    areaD += ` L ${areaPoints[areaPoints.length - 1].x} ${padding.top + chartHeight} Z`;
+
+    // Chart Content
+    chartContent = `
+      <!-- Area fill -->
+      <path class="chart-area" d="${areaD}"/>
+      
+      <!-- Line -->
+      <path class="chart-line" d="${pathD}" style="stroke-dasharray: ${amountNum > 0 ? 'none' : '4 4'}"/>
+      
+      <!-- Points -->
+      ${pathPoints.map(p => `
+        <circle class="chart-point ${p.isCurrent ? 'new' : ''}" cx="${p.x}" cy="${p.y}" r="${p.isCurrent ? 6 : 4}" style="${p.isFuture ? 'opacity: 0.5' : ''}"/>
+      `).join('')}
+    `;
+
+    // Axis Labels (Months)
+    axisLabels = `
+      <text class="chart-x-label" x="${padding.left}" y="${height - 5}">Jan</text>
+      <text class="chart-x-label" x="${padding.left + chartWidth / 2}" y="${height - 5}">Juil</text>
+      <text class="chart-x-label" x="${width - padding.right}" y="${height - 5}">Déc</text>
+    `;
+
+  } else {
+    // --- EXPENSE MODE: Monthly Daily Tracking ---
+    const now = new Date();
+    const today = now.getDate();
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const projectedTotal = currentSpent + amountNum;
+
+    maxY = Math.max(budgetLimit || 0, projectedTotal, currentSpent) * 1.2 || 100;
+
+    // Filter chart data for path
+    chartData.forEach((d) => {
+      if (d.isPast || d.isToday) {
+        const x = padding.left + (d.day / daysInMonth) * chartWidth;
+        const y = padding.top + chartHeight - (d.cumulative / maxY) * chartHeight;
+        pathPoints.push({ x, y });
+        areaPoints.push({ x, y });
+      }
+    });
+
+    // Projected point
+    if (amountNum > 0) {
+      const x = padding.left + (today / daysInMonth) * chartWidth;
+      const y = padding.top + chartHeight - (projectedTotal / maxY) * chartHeight;
+      projectedPoint = { x, y };
+    }
+
+    // Build paths
+    let pathD = '';
+    if (pathPoints.length > 0) {
+      pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
+      for (let i = 1; i < pathPoints.length; i++) {
+        pathD += ` L ${pathPoints[i].x} ${pathPoints[i].y}`;
+      }
+      if (projectedPoint) {
+        pathD += ` L ${projectedPoint.x} ${projectedPoint.y}`;
+      }
+    }
+
+    let areaD = '';
+    if (areaPoints.length > 0) {
+      const allPoints = [...areaPoints];
+      if (projectedPoint) allPoints.push(projectedPoint);
+
+      areaD = `M ${allPoints[0].x} ${padding.top + chartHeight}`;
+      allPoints.forEach(p => areaD += ` L ${p.x} ${p.y}`);
+      areaD += ` L ${allPoints[allPoints.length - 1].x} ${padding.top + chartHeight} Z`;
+    }
+
+    // Budget Line
+    if (budgetLimit > 0) {
+      const budgetY = padding.top + chartHeight - (budgetLimit / maxY) * chartHeight;
+      budgetLine = `
+        <rect class="chart-budget-zone" x="${padding.left}" y="${padding.top}" width="${chartWidth}" height="${Math.max(0, budgetY - padding.top)}"/>
+        <line class="chart-budget-line" x1="${padding.left}" y1="${budgetY}" x2="${width - padding.right}" y2="${budgetY}"/>
+        <text class="chart-budget-label" x="${width - padding.right - 5}" y="${budgetY - 5}" text-anchor="end">Budget</text>
+      `;
+    }
+
+    const isOverBudget = budgetLimit > 0 && projectedTotal > budgetLimit;
+
+    chartContent = `
+      ${areaD ? `<path class="chart-area" d="${areaD}"/>` : ''}
+      ${pathD ? `<path class="chart-line ${isOverBudget ? 'over-budget' : ''}" d="${pathD}"/>` : ''}
+      ${pathPoints.map(p => `<circle class="chart-point" cx="${p.x}" cy="${p.y}" r="4"/>`).join('')}
+      ${projectedPoint ? `<circle class="chart-point new ${isOverBudget ? 'over-budget' : ''}" cx="${projectedPoint.x}" cy="${projectedPoint.y}" r="6"/>` : ''}
+    `;
+
+    axisLabels = `
+      <text class="chart-x-label" x="${padding.left}" y="${height - 5}">1</text>
+      <text class="chart-x-label" x="${padding.left + chartWidth / 2}" y="${height - 5}">${Math.floor(daysInMonth / 2)}</text>
+      <text class="chart-x-label" x="${width - padding.right}" y="${height - 5}">${daysInMonth}</text>
+    `;
   }
-
-  // Budget line Y
-  const budgetY = budgetLimit > 0
-    ? padding.top + chartHeight - (budgetLimit / maxY) * chartHeight
-    : null;
-
-  // Check if over budget
-  const isOverBudget = budgetLimit > 0 && projectedTotal > budgetLimit;
 
   svg.innerHTML = `
     <!-- Grid lines -->
     <line class="chart-grid-line" x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + chartHeight}"/>
     <line class="chart-grid-line" x1="${padding.left}" y1="${padding.top + chartHeight}" x2="${width - padding.right}" y2="${padding.top + chartHeight}"/>
     
-    ${budgetLimit > 0 ? `
-      <!-- Budget zone (over budget area) -->
-      <rect class="chart-budget-zone" x="${padding.left}" y="${padding.top}" width="${chartWidth}" height="${Math.max(0, budgetY - padding.top)}"/>
-      
-      <!-- Budget line -->
-      <line class="chart-budget-line" x1="${padding.left}" y1="${budgetY}" x2="${width - padding.right}" y2="${budgetY}"/>
-      <text class="chart-budget-label" x="${width - padding.right - 5}" y="${budgetY - 5}" text-anchor="end">Budget</text>
-    ` : ''}
-    
-    <!-- Area fill -->
-    ${areaD ? `<path class="chart-area" d="${areaD}"/>` : ''}
-    
-    <!-- Line -->
-    ${pathD ? `<path class="chart-line ${isOverBudget ? 'over-budget' : ''}" d="${pathD}"/>` : ''}
-    
-    <!-- Points -->
-    ${pathPoints.map(p => `
-      <circle class="chart-point" cx="${p.x}" cy="${p.y}" r="4"/>
-    `).join('')}
-    
-    <!-- Projected point -->
-    ${projectedPoint ? `
-      <circle class="chart-point new ${isOverBudget ? 'over-budget' : ''}" cx="${projectedPoint.x}" cy="${projectedPoint.y}" r="6"/>
-    ` : ''}
-    
-    <!-- X axis labels -->
-    <text class="chart-x-label" x="${padding.left}" y="${height - 5}">1</text>
-    <text class="chart-x-label" x="${padding.left + chartWidth / 2}" y="${height - 5}">${Math.floor(daysInMonth / 2)}</text>
-    <text class="chart-x-label" x="${width - padding.right}" y="${height - 5}">${daysInMonth}</text>
+    ${budgetLine}
+    ${chartContent}
+    ${axisLabels}
   `;
 }
 
