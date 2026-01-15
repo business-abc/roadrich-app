@@ -234,7 +234,7 @@ function renderStep1(stepContent, { userId, onBack, onSuccess, categories }) {
       const swipeDistance = touchEndX - touchStartX;
 
       if (Math.abs(swipeDistance) > minSwipeDistance) {
-        const newMode = swipeDistance < 0 ? 'savings' : 'expense'; // Swipe left = savings, right = expense
+        const newMode = swipeDistance < 0 ? 'expense' : 'savings'; // Swipe left = expense, right = savings
         if (newMode !== mode) {
           mode = newMode;
           renderScreen(stepContent.closest('.add-expense-screen').parentElement, {
