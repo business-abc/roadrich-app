@@ -958,3 +958,166 @@
         font-size: var(--text-xs);
     }
 }
+/* ============================================
+   Savings Section
+   ============================================ */
+.savings-section {
+    margin-bottom: calc(var(--space-2xl) + 80px); /* Extra space for bottom dock */
+    animation: slideUp 0.4s ease backwards 0.2s;
+}
+
+.savings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    padding: 0 var(--space-xs);
+}
+
+.savings-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+.add-savings-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: #10B981; /* Emerald Green */
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+}
+
+.add-savings-btn:hover {
+    background: rgba(16, 185, 129, 0.2);
+    transform: translateY(-1px);
+}
+
+.add-savings-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.savings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-md);
+}
+
+.savings-card {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.savings-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #10B981;
+    opacity: 0.5;
+}
+
+.savings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.savings-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.savings-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.savings-card-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.savings-card-balance {
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+}
+
+.savings-card-footer {
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--glass-border);
+    font-size: var(--text-xs);
+    color: var(--color-text-tertiary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.last-added-amount {
+    color: #10B981;
+    font-weight: var(--font-medium);
+}
+
+/* Empty State used within the grid if using a button style card */
+.savings-add-card {
+    background: var(--color-bg-elevated);
+    border: 1px dashed var(--color-text-tertiary);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    min-height: 140px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: var(--color-text-secondary);
+}
+
+.savings-add-card:hover {
+    border-color: #10B981;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.savings-add-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--glass-border);
+}

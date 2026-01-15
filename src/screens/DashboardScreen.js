@@ -56,7 +56,7 @@ export async function renderDashboardScreen(container, { userId, onLogout, onAdd
 }
 
 function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCategory, onEditCategory, onAnalysis, onExpensesList, weeklyData, todayExpenses }) {
-  const { profile, categories, totalExpenses, remainingBudget, expenses } = dashboardData;
+  const { profile, categories, totalExpenses, remainingBudget, expenses, savingsExpenses } = dashboardData;
   const monthlyIncome = profile?.monthly_income || 0;
   const spentPercent = monthlyIncome > 0 ? Math.min(100, (totalExpenses / monthlyIncome) * 100) : 0;
 
@@ -164,6 +164,24 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
                 <span>Aucune dépense ce mois</span>
               </div>
             `}
+          </div>
+
+          <!-- Savings Section -->
+          <div class="savings-section">
+            <div class="savings-header">
+              <span class="savings-title">Mon Épargne</span>
+              <button class="add-savings-btn" id="add-savings-category-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Ajouter
+              </button>
+            </div>
+            
+            <div class="savings-grid">
+              ${renderSavingsCards(categories, savingsExpenses)}
+            </div>
           </div>
           
         </div>
@@ -442,11 +460,21 @@ function setupEventListeners(container, { userId, onLogout, onAddExpense, onAddC
     if (onAddExpense) onAddExpense();
   });
 
-  // Add category buttons
+  // Add Category
   container.querySelector('#add-category-btn')?.addEventListener('click', () => {
-    if (onAddCategory) onAddCategory();
+    onAddCategory('expense'); // Default to expense from Treemap
   });
 
+  // Add Savings Category Buttons
+  container.querySelector('#add-savings-category-btn')?.addEventListener('click', () => {
+    onAddCategory('savings');
+  });
+
+  container.querySelector('#grid-add-savings-btn')?.addEventListener('click', () => {
+    onAddCategory('savings');
+  });
+
+  // Edit Category (Delegation for treemap tiles)
   container.querySelector('#create-first-category-btn')?.addEventListener('click', () => {
     if (onAddCategory) onAddCategory();
   });
@@ -798,4 +826,55 @@ function formatCurrency(amount) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+function renderSavingsCards(categories, savingsExpenses) {
+  const savingsCats = (categories || []).filter(c => c.type === 'savings');
+
+  // Logic to calculate savings
+  const cardsHtml = savingsCats.map(cat => {
+    // Calculate total balance for this category
+    const catExpenses = (savingsExpenses || []).filter(e => e.category_id === cat.id);
+    const total = catExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+    // Last added detail
+    // savingsExpenses are sorted by date desc
+    const lastExpense = catExpenses[0];
+    let lastAddedText = 'Aucun ajout';
+    if (lastExpense) {
+      const date = new Date(lastExpense.date);
+      lastAddedText = `+${formatCurrency(lastExpense.amount)} le ${date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`;
+    }
+
+    return `
+      <div class="savings-card">
+        <div class="savings-card-header">
+           <div class="savings-card-icon" style="background: ${cat.color}20;">
+             ${cat.icon}
+           </div>
+           <span class="savings-card-name">${cat.name}</span>
+        </div>
+        <div class="savings-card-balance">${formatCurrency(total)}</div>
+        <div class="savings-card-footer">
+           <span>Dernier ajout</span>
+           <span class="last-added-amount">${lastAddedText}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Add Button Card
+  const addBtnHtml = `
+    <button class="savings-add-card" id="grid-add-savings-btn">
+      <div class="savings-add-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10B981;">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </div>
+      <span>Nouvelle épargne</span>
+    </button>
+  `;
+
+  return cardsHtml + addBtnHtml;
 }

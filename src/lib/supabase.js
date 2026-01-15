@@ -202,13 +202,35 @@ export async function getDashboardData(userId) {
   // Get categories
   const { data: categories } = await getCategories(userId);
 
+  // Get savings categories IDs
+  const savingsCategoryIds = (categories || [])
+    .filter(c => c.type === 'savings')
+    .map(c => c.id);
+
   // Get this month's expenses
   const { data: expenses } = await getExpenses(userId, startOfMonth, endOfMonth);
 
   // Get last month's expenses for comparison
   const { data: lastMonthExpenses } = await getExpenses(userId, startOfLastMonth, endOfLastMonth);
 
-  // Calculate totals
+  // Get ALL TIME savings expenses (to calculate total balance)
+  let savingsExpenses = [];
+  if (savingsCategoryIds.length > 0) {
+    const { data } = await supabase
+      .from('expenses')
+      .select('*, categories(name, icon, color, type)')
+      .eq('user_id', userId)
+      .in('category_id', savingsCategoryIds)
+      .order('date', { ascending: false });
+    savingsExpenses = data || [];
+  }
+
+  // Calculate totals (excluding savings usually, but expenses array here is filtered by date, not type yet)
+  // Note: dashboardData.totalExpenses usually implies "spent", so we might want to filter out savings from "totalExpenses" 
+  // if we consider savings as "not spent". 
+  // CHECK: Does the user want savings to count as expenses in the main chart? 
+  // Usually yes, it's money out of the "current account". 
+  // But for "Remaining Budget", it depends. Let's keep totalExpenses as is (sum of all records in date range).
   const totalExpenses = expenses?.reduce((sum, exp) => sum + exp.amount, 0) || 0;
   const remainingBudget = (profile?.monthly_income || 0) - totalExpenses;
 
@@ -217,6 +239,7 @@ export async function getDashboardData(userId) {
     categories: categories || [],
     expenses: expenses || [],
     lastMonthExpenses: lastMonthExpenses || [],
+    savingsExpenses, // New field
     totalExpenses,
     remainingBudget,
   };

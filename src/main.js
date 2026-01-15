@@ -128,8 +128,8 @@ function navigateTo(screen, options = {}) {
         onAddExpense: () => {
           navigateTo('add-expense');
         },
-        onAddCategory: () => {
-          showAddCategoryModal();
+        onAddCategory: (mode) => {
+          showAddCategoryModal(mode);
         },
         onEditCategory: (category) => {
           showEditCategoryModal(category);
@@ -200,18 +200,6 @@ function showAddCategoryModal() {
       <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Nouvelle catégorie</h2>
       
       <form id="category-form" style="display: flex; flex-direction: column; gap: var(--space-lg);">
-        <!-- Name Input -->
-        <div class="auth-input-group">
-          <label class="auth-label" for="category-name">Nom</label>
-          <input 
-            type="text" 
-            id="category-name" 
-            class="auth-input" 
-            placeholder="Ex: Alimentation"
-            required
-          />
-        </div>
-        
         <!-- Type Selector (Expense/Savings) -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Type</label>
@@ -225,19 +213,19 @@ function showAddCategoryModal() {
             <div class="type-selector-bg" id="type-bg" style="
               position: absolute;
               top: 4px;
-              left: 4px;
+              left: ${initialBgLeft};
               width: calc(50% - 4px);
               height: calc(100% - 8px);
-              background: var(--color-accent-cyan);
+              background: ${initialBgColor};
               border-radius: var(--radius-full);
               transition: all 0.3s ease;
             "></div>
-            <button type="button" class="type-option active" data-type="expense" style="
+            <button type="button" class="type-option ${expenseActive}" data-type="expense" style="
               flex: 1;
               padding: var(--space-sm) var(--space-md);
               border: none;
               background: transparent;
-              color: var(--color-bg-primary);
+              color: ${expenseColor};
               font-size: var(--text-sm);
               font-weight: var(--font-semibold);
               cursor: pointer;
@@ -245,12 +233,12 @@ function showAddCategoryModal() {
               z-index: 1;
               transition: color 0.3s ease;
             ">💸 Dépense</button>
-            <button type="button" class="type-option" data-type="savings" style="
+            <button type="button" class="type-option ${savingsActive}" data-type="savings" style="
               flex: 1;
               padding: var(--space-sm) var(--space-md);
               border: none;
               background: transparent;
-              color: var(--color-text-secondary);
+              color: ${savingsColor};
               font-size: var(--text-sm);
               font-weight: var(--font-semibold);
               cursor: pointer;
@@ -259,6 +247,18 @@ function showAddCategoryModal() {
               transition: color 0.3s ease;
             ">💰 Épargne</button>
           </div>
+        </div>
+
+        <!-- Name Input -->
+        <div class="auth-input-group">
+          <label class="auth-label" for="category-name">Nom</label>
+          <input 
+            type="text" 
+            id="category-name" 
+            class="auth-input" 
+            placeholder="Ex: Alimentation"
+            required
+          />
         </div>
         
         <!-- Icon Selection -->
@@ -372,11 +372,6 @@ function showAddCategoryModal() {
   }
 
   document.body.appendChild(modal);
-
-  // State
-  let selectedIcon = icons[0];
-  let selectedColor = colors[0];
-  let selectedType = 'expense';
 
   // Type selection (sliding toggle)
   const typeBg = modal.querySelector('#type-bg');
