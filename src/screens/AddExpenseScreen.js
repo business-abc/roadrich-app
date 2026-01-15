@@ -218,44 +218,6 @@ function renderStep1(stepContent, { userId, onBack, onSuccess, categories }) {
     });
   });
 
-  // Swipe gesture handler for mode switching
-  // Swipe gesture handler for mode switching
-  const stepCategoryEl = stepContent.querySelector('.step-category');
-  if (stepCategoryEl) {
-    let touchStartX = 0;
-    let touchStartY = 0;
-    const minSwipeDistance = 50;
-    const maxVerticalDistance = 30; // Ignore swipe if vertical movement is too large (scrolling)
-
-    stepCategoryEl.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true });
-
-    stepCategoryEl.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const touchEndY = e.changedTouches[0].screenY;
-
-      const swipeDistanceX = touchEndX - touchStartX;
-      const swipeDistanceY = touchEndY - touchStartY;
-
-      // Only trigger if horizontal swipe is significant and vertical movement is minimal
-      if (Math.abs(swipeDistanceX) > minSwipeDistance && Math.abs(swipeDistanceY) < maxVerticalDistance) {
-        // Logic:
-        // Swipe Right (positive distance) -> Savings
-        // Swipe Left (negative distance) -> Expense
-        const newMode = swipeDistanceX > 0 ? 'savings' : 'expense';
-
-        if (newMode !== mode) {
-          mode = newMode;
-          renderScreen(stepContent.closest('.add-expense-screen').parentElement, {
-            userId, onBack, onSuccess, categories
-          });
-        }
-      }
-    }, { passive: true });
-  }
-
   // Category selection handlers
   stepContent.querySelectorAll('.category-grid-item').forEach(btn => {
     btn.addEventListener('click', async () => {
