@@ -169,8 +169,8 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
           <!-- Savings Section -->
           <div class="savings-section">
             <div class="savings-header">
-              <span class="savings-title">Mon Épargne</span>
-              <button class="add-savings-btn" id="add-savings-category-btn">
+              <span class="recent-expenses-title">Mon Épargne</span>
+              <button class="category-add-btn" id="add-savings-category-btn" style="color: #10B981;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"/>
                   <line x1="5" y1="12" x2="19" y2="12"/>
@@ -863,18 +863,5 @@ function renderSavingsCards(categories, savingsExpenses) {
     `;
   }).join('');
 
-  // Add Button Card
-  const addBtnHtml = `
-    <button class="savings-add-card" id="grid-add-savings-btn">
-      <div class="savings-add-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10B981;">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </div>
-      <span>Nouvelle épargne</span>
-    </button>
-  `;
-
-  return cardsHtml + addBtnHtml;
+  return cardsHtml;
 }

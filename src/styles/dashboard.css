@@ -958,11 +958,13 @@
         font-size: var(--text-xs);
     }
 }
+
 /* ============================================
    Savings Section
    ============================================ */
 .savings-section {
-    margin-bottom: calc(var(--space-2xl) + 80px); /* Extra space for bottom dock */
+    margin-bottom: calc(var(--space-2xl) + 80px);
+    /* Extra space for bottom dock */
     animation: slideUp 0.4s ease backwards 0.2s;
 }
 
@@ -972,36 +974,6 @@
     align-items: center;
     margin-bottom: var(--space-md);
     padding: 0 var(--space-xs);
-}
-
-.savings-title {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
-    color: var(--color-text-primary);
-}
-
-.add-savings-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: #10B981; /* Emerald Green */
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-full);
-    transition: all var(--transition-fast);
-}
-
-.add-savings-btn:hover {
-    background: rgba(16, 185, 129, 0.2);
-    transform: translateY(-1px);
-}
-
-.add-savings-btn svg {
-    width: 14px;
-    height: 14px;
 }
 
 .savings-grid {
@@ -1088,36 +1060,4 @@
     font-weight: var(--font-medium);
 }
 
-/* Empty State used within the grid if using a button style card */
-.savings-add-card {
-    background: var(--color-bg-elevated);
-    border: 1px dashed var(--color-text-tertiary);
-    border-radius: var(--radius-xl);
-    padding: var(--space-lg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-    min-height: 140px;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    color: var(--color-text-secondary);
-}
-
-.savings-add-card:hover {
-    border-color: #10B981;
-    color: #10B981;
-    background: rgba(16, 185, 129, 0.05);
-}
-
-.savings-add-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--color-bg-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--glass-border);
-}
+/* End Savings Section */
