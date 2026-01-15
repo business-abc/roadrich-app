@@ -534,10 +534,17 @@ function showEditCategoryModal(category) {
       max-width: 400px;
       max-height: 90vh;
       padding: var(--space-lg);
+      padding-top: var(--space-xl);
       animation: scaleIn 0.3s ease;
       overflow-y: auto;
       overflow-x: hidden;
     ">
+      <button class="modal-close-btn" id="close-edit-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
       <h2 style="font-size: var(--text-xl); margin-bottom: var(--space-lg);">Modifier la catégorie</h2>
       
       <form id="edit-category-form" style="display: flex; flex-direction: column; gap: var(--space-lg);">
@@ -694,6 +701,11 @@ function showEditCategoryModal(category) {
     if (e.target === modal) {
       modal.remove();
     }
+  });
+
+  // Close button
+  modal.querySelector('#close-edit-modal')?.addEventListener('click', () => {
+    modal.remove();
   });
 
   // Delete category
