@@ -14,7 +14,7 @@ import './styles/analysis.css';
 import './styles/expenses-list.css';
 
 // Supabase
-import { supabase, getCurrentUser, getProfile, onAuthStateChange, createCategory, updateCategory, deleteCategory } from './lib/supabase.js';
+import { supabase, getCurrentUser, getProfile, onAuthStateChange, createCategory, updateCategory, deleteCategory, getCategories } from './lib/supabase.js';
 
 // Screens
 import { renderWelcomeScreen } from './screens/WelcomeScreen.js';
