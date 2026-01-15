@@ -12,9 +12,9 @@ let analysisData = null;
 let container = null;
 let callbacks = null;
 
-export async function renderAnalysisScreen(containerEl, { userId, onBack }) {
+export async function renderAnalysisScreen(containerEl, { userId, onBack, onCategorySelect }) {
   container = containerEl;
-  callbacks = { userId, onBack };
+  callbacks = { userId, onBack, onCategorySelect };
 
   // Show loading state
   container.innerHTML = `
@@ -227,7 +227,7 @@ function renderCategoryCarousel(categoryTotals, grandTotal) {
     <div class="category-carousel">
       <div class="carousel-track" id="carousel-track">
         ${cardsData.map((cat, index) => `
-          <div class="carousel-card" data-index="${index}" style="--card-accent-color: ${cat.color};">
+          <div class="carousel-card" data-index="${index}" data-category-id="${cat.id}" style="--card-accent-color: ${cat.color}; cursor: pointer;">
             <div class="carousel-card-header">
               <div class="carousel-card-icon" style="background: ${cat.color}20; color: ${cat.color};">
                 ${cat.icon}
@@ -457,11 +457,22 @@ function setupEventListeners() {
 
     // Click on dots to scroll
     carouselDots.forEach(dot => {
-      dot.addEventListener('click', () => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent card click
         const index = parseInt(dot.dataset.index);
         const card = carouselTrack.querySelector(`.carousel-card[data-index="${index}"]`);
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+
+    // Click on cards to navigate
+    container.querySelectorAll('.carousel-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const categoryId = card.dataset.categoryId;
+        if (callbacks.onCategorySelect && categoryId) {
+          callbacks.onCategorySelect(categoryId);
         }
       });
     });
