@@ -220,7 +220,7 @@ function renderDashboard(container, { userId, onLogout, onAddExpense, onAddCateg
   `;
 
   // Event Listeners
-  setupEventListeners(container, { userId, onLogout, onAddExpense, onAddCategory, onEditCategory, onAnalysis, onExpensesList });
+  setupEventListeners(container, { userId, onLogout, onAddExpense, onAddCategory, onEditCategory, onAnalysis, onExpensesList, onManageCategories });
 }
 
 function renderExpenseItem(expense) {
