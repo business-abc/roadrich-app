@@ -227,9 +227,9 @@ function renderCategoryCarousel(categoryTotals, grandTotal) {
     <div class="category-carousel">
       <div class="carousel-track" id="carousel-track">
         ${cardsData.map((cat, index) => `
-          <div class="carousel-card" data-index="${index}" style="border-top: 3px solid ${cat.color};">
+          <div class="carousel-card" data-index="${index}" style="--card-accent-color: ${cat.color};">
             <div class="carousel-card-header">
-              <div class="carousel-card-icon" style="background: ${cat.color}20;">
+              <div class="carousel-card-icon" style="background: ${cat.color}20; color: ${cat.color};">
                 ${cat.icon}
               </div>
               <div class="carousel-card-title">${cat.name}</div>
