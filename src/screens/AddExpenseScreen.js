@@ -576,21 +576,31 @@ function updateChart(stepContent, budgetLimit, currentSpent) {
     // Calculate cumulative savings if user saves this amount monthly for the rest of the year
     let cumulative = 0; // Start from 0 or existing savings (simplified to 0 for this view)
 
-    // Generate 12 points
+    // Generate 12 points structure but only fill data up to current month
     const projectionData = months.map((m, i) => {
-      // Past months: 0 (or real data if we had it loaded)
-      // Current month: +amount
-      // Future months: +amount * (months left)
-      if (i >= currentMonthIndex) {
+      // Logic:
+      // Past months: 0 (simplified as we don't load full year history yet)
+      // Current month: amount (what user is adding)
+      // Future months: null (no projection)
+
+      if (i < currentMonthIndex) {
+        return { month: m, value: 0, hasData: true, isCurrent: false };
+      } else if (i === currentMonthIndex) {
         cumulative += amountNum;
+        return { month: m, value: cumulative, hasData: true, isCurrent: true };
+      } else {
+        return { month: m, value: null, hasData: false, isCurrent: false }; // Future
       }
-      return { month: m, value: cumulative, isFuture: i > currentMonthIndex, isCurrent: i === currentMonthIndex };
     });
 
-    maxY = Math.max(100, projectionData[11].value * 1.1);
+    // Calculate Max Y based on current value
+    const currentVal = projectionData[currentMonthIndex].value;
+    maxY = Math.max(100, currentVal * 1.5); // Give some headroom
 
-    // Build points
+    // Build points only for existing data
     projectionData.forEach((d, i) => {
+      if (!d.hasData) return;
+
       const x = padding.left + (i / 11) * chartWidth;
       const y = padding.top + chartHeight - (d.value / maxY) * chartHeight;
       pathPoints.push({ x, y, ...d });
@@ -598,12 +608,18 @@ function updateChart(stepContent, budgetLimit, currentSpent) {
     });
 
     // Build path
-    let pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
-    pathPoints.forEach(p => pathD += ` L ${p.x} ${p.y}`);
+    let pathD = '';
+    if (pathPoints.length > 0) {
+      pathD = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
+      pathPoints.forEach(p => pathD += ` L ${p.x} ${p.y}`);
+    }
 
-    let areaD = `M ${areaPoints[0].x} ${padding.top + chartHeight}`;
-    areaPoints.forEach(p => areaD += ` L ${p.x} ${p.y}`);
-    areaD += ` L ${areaPoints[areaPoints.length - 1].x} ${padding.top + chartHeight} Z`;
+    let areaD = '';
+    if (areaPoints.length > 0) {
+      areaD = `M ${areaPoints[0].x} ${padding.top + chartHeight}`;
+      areaPoints.forEach(p => areaD += ` L ${p.x} ${p.y}`);
+      areaD += ` L ${areaPoints[areaPoints.length - 1].x} ${padding.top + chartHeight} Z`;
+    }
 
     // Chart Content
     chartContent = `
