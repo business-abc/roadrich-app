@@ -259,8 +259,11 @@ function renderCategoryItem(category, expenses) {
 
 // Treemap Heatmap Component
 function renderTreemap(categories, currentExpenses, lastMonthExpenses) {
-  // If no categories, show empty state with create button
-  if (categories.length === 0) {
+  // Filter out savings categories - only show expense categories in treemap
+  const expenseCategories = categories.filter(cat => cat.type !== 'savings');
+
+  // If no expense categories, show empty state with create button
+  if (expenseCategories.length === 0) {
     return `
       <div class="treemap-section">
         <div class="treemap-header">
@@ -284,7 +287,7 @@ function renderTreemap(categories, currentExpenses, lastMonthExpenses) {
   }
 
   // Calculate spending per category for current and last month
-  const categoryData = categories.map(cat => {
+  const categoryData = expenseCategories.map(cat => {
     const currentSpent = currentExpenses
       .filter(e => e.category_id === cat.id)
       .reduce((sum, e) => sum + e.amount, 0);

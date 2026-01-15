@@ -218,6 +218,33 @@ function renderStep1(stepContent, { userId, onBack, onSuccess, categories }) {
     });
   });
 
+  // Swipe gesture handler for mode switching
+  const stepCategoryEl = stepContent.querySelector('.step-category');
+  if (stepCategoryEl) {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50;
+
+    stepCategoryEl.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    stepCategoryEl.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const swipeDistance = touchEndX - touchStartX;
+
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        const newMode = swipeDistance < 0 ? 'savings' : 'expense'; // Swipe left = savings, right = expense
+        if (newMode !== mode) {
+          mode = newMode;
+          renderScreen(stepContent.closest('.add-expense-screen').parentElement, {
+            userId, onBack, onSuccess, categories
+          });
+        }
+      }
+    }, { passive: true });
+  }
+
   // Category selection handlers
   stepContent.querySelectorAll('.category-grid-item').forEach(btn => {
     btn.addEventListener('click', async () => {
