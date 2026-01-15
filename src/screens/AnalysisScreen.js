@@ -235,22 +235,21 @@ function renderCategoryCarousel(categoryTotals, grandTotal) {
               <div class="carousel-card-title">${cat.name}</div>
             </div>
             
-            <div class="carousel-card-amount">${formatCurrency(cat.total)}</div>
+            <div class="carousel-amount-row">
+              <div class="carousel-card-amount">${formatCurrency(cat.total)}</div>
+              <div class="carousel-variation ${cat.variation < 0 ? 'positive' : cat.variation > 0 ? 'negative' : ''}">
+                ${cat.variation === 0 ? '=' : cat.variation > 0 ? `+${cat.variation}%` : `${cat.variation}%`}
+              </div>
+            </div>
             
             <div class="carousel-card-stats">
-              <div class="carousel-stat">
-                <span class="carousel-stat-label">Variation</span>
-                <span class="carousel-stat-value ${cat.variation < 0 ? 'positive' : cat.variation > 0 ? 'negative' : ''}">
-                  ${cat.variation === 0 ? '=' : cat.variation > 0 ? `+${cat.variation}%` : `${cat.variation}%`}
-                </span>
-              </div>
               <div class="carousel-stat">
                 <span class="carousel-stat-label">Dépenses</span>
                 <span class="carousel-stat-value">${cat.expenseCount}</span>
               </div>
               <div class="carousel-stat">
                 <span class="carousel-stat-label">% du total</span>
-                <span class="carousel-stat-value">${cat.percentOfTotal}%</span>
+                <span class="carousel-stat-value neon-text">${cat.percentOfTotal}%</span>
               </div>
             </div>
           </div>

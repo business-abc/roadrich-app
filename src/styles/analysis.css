@@ -513,6 +513,15 @@
     letter-spacing: -0.01em;
 }
 
+.carousel-amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    position: relative;
+    z-index: 1;
+}
+
 .carousel-card-amount {
     font-family: var(--font-mono);
     font-size: 2.5rem;
@@ -520,14 +529,29 @@
     color: var(--color-text-primary);
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     letter-spacing: -0.03em;
-    margin-bottom: var(--space-xs);
-    position: relative;
-    z-index: 1;
+    margin-bottom: 0;
+}
+
+.carousel-variation {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text-tertiary);
+}
+
+.carousel-variation.positive {
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.carousel-variation.negative {
+    color: #f87171;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.3);
 }
 
 .carousel-card-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-sm);
     padding-top: var(--space-lg);
     border-top: 1px solid var(--glass-border);
@@ -624,4 +648,12 @@
     font-weight: var(--font-bold);
     color: var(--color-accent-cyan);
     text-shadow: 0 0 12px rgba(0, 245, 212, 0.3);
+}
+
+.neon-text {
+    color: #ffffff;
+    text-shadow:
+        0 0 4px var(--card-accent-color, var(--color-accent-cyan)),
+        0 0 8px var(--card-accent-color, var(--color-accent-cyan));
+    font-weight: 700;
 }
