@@ -14,6 +14,7 @@ let expenseDate = new Date().toISOString().split('T')[0];
 let expenseDescription = '';
 let categoryExpenses = [];
 let chartData = [];
+let mode = 'expense'; // 'expense' or 'savings'
 
 export async function renderAddExpenseScreen(container, { userId, onBack, onSuccess }) {
   // Reset state
@@ -24,6 +25,7 @@ export async function renderAddExpenseScreen(container, { userId, onBack, onSucc
   expenseDate = new Date().toISOString().split('T')[0];
   expenseDescription = '';
   categoryExpenses = [];
+  mode = 'expense';
 
   // Show loading
   container.innerHTML = `
@@ -52,8 +54,11 @@ export async function renderAddExpenseScreen(container, { userId, onBack, onSucc
 }
 
 function renderScreen(container, { userId, onBack, onSuccess, categories }) {
+  const isSavings = mode === 'savings';
+  const title = isSavings ? 'Nouvelle épargne' : 'Nouvelle dépense';
+
   container.innerHTML = `
-    <div class="add-expense-screen">
+    <div class="add-expense-screen ${isSavings ? 'savings-mode' : ''}">
       <!-- Header -->
       <header class="add-expense-header">
         <button class="add-expense-back-btn" id="back-btn" aria-label="Retour">
@@ -61,7 +66,7 @@ function renderScreen(container, { userId, onBack, onSuccess, categories }) {
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
         </button>
-        <h1 class="add-expense-title">Nouvelle dépense</h1>
+        <h1 class="add-expense-title">${title}</h1>
       </header>
       
       <!-- Step Indicator -->
@@ -109,36 +114,109 @@ function renderScreen(container, { userId, onBack, onSuccess, categories }) {
 
 // Step 1: Category Selection
 function renderStep1(stepContent, { userId, onBack, onSuccess, categories }) {
-  if (categories.length === 0) {
-    stepContent.innerHTML = `
-      <div class="step-category">
-        <div class="category-empty-state">
-          <div class="category-empty-state-icon">📂</div>
-          <p class="category-empty-state-text">Créez d'abord une catégorie<br/>pour ajouter des dépenses</p>
-          <button class="btn-primary" id="go-back-btn">Retour au tableau de bord</button>
-        </div>
-      </div>
-    `;
+  const isSavings = mode === 'savings';
 
-    stepContent.querySelector('#go-back-btn').addEventListener('click', onBack);
-    return;
-  }
+  // Filter categories by type
+  const expenseCategories = categories.filter(c => c.type !== 'savings');
+  const savingsCategories = categories.filter(c => c.type === 'savings');
+  const currentCategories = isSavings ? savingsCategories : expenseCategories;
+
+  const emptyMessage = isSavings
+    ? "Créez d'abord une catégorie<br/>d'épargne"
+    : "Créez d'abord une catégorie<br/>pour ajouter des dépenses";
 
   stepContent.innerHTML = `
     <div class="step-category">
-      <h2 class="step-category-title">Choisir une catégorie</h2>
-      <div class="category-grid">
-        ${categories.map(cat => `
-          <button class="category-grid-item" data-category-id="${cat.id}">
-            <div class="category-grid-icon" style="background: ${cat.color}20;">
-              ${cat.icon}
-            </div>
-            <span class="category-grid-name">${cat.name}</span>
-          </button>
-        `).join('')}
+      <!-- Mode Tabs -->
+      <div class="mode-tabs" id="mode-tabs" style="
+        display: flex;
+        background: var(--color-bg-elevated);
+        border-radius: var(--radius-full);
+        padding: 4px;
+        margin-bottom: var(--space-lg);
+        position: relative;
+      ">
+        <div class="mode-tabs-bg" id="mode-tabs-bg" style="
+          position: absolute;
+          top: 4px;
+          left: ${isSavings ? 'calc(50% + 0px)' : '4px'};
+          width: calc(50% - 4px);
+          height: calc(100% - 8px);
+          background: ${isSavings ? '#10B981' : 'var(--color-accent-cyan)'};
+          border-radius: var(--radius-full);
+          transition: all 0.3s ease;
+        "></div>
+        <button type="button" class="mode-tab ${!isSavings ? 'active' : ''}" data-mode="expense" style="
+          flex: 1;
+          padding: var(--space-sm) var(--space-md);
+          border: none;
+          background: transparent;
+          color: ${!isSavings ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'};
+          font-size: var(--text-sm);
+          font-weight: var(--font-semibold);
+          cursor: pointer;
+          position: relative;
+          z-index: 1;
+          transition: color 0.3s ease;
+        ">💸 Dépense</button>
+        <button type="button" class="mode-tab ${isSavings ? 'active' : ''}" data-mode="savings" style="
+          flex: 1;
+          padding: var(--space-sm) var(--space-md);
+          border: none;
+          background: transparent;
+          color: ${isSavings ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)'};
+          font-size: var(--text-sm);
+          font-weight: var(--font-semibold);
+          cursor: pointer;
+          position: relative;
+          z-index: 1;
+          transition: color 0.3s ease;
+        ">💰 Épargne</button>
       </div>
+      
+      <h2 class="step-category-title">Choisir une catégorie</h2>
+      
+      ${currentCategories.length > 0 ? `
+        <div class="category-grid">
+          ${currentCategories.map(cat => `
+            <button class="category-grid-item" data-category-id="${cat.id}">
+              <div class="category-grid-icon" style="background: ${cat.color}20;">
+                ${cat.icon}
+              </div>
+              <span class="category-grid-name">${cat.name}</span>
+            </button>
+          `).join('')}
+        </div>
+      ` : `
+        <div class="category-empty-state">
+          <div class="category-empty-state-icon">${isSavings ? '💰' : '📂'}</div>
+          <p class="category-empty-state-text">${emptyMessage}</p>
+          <button class="btn-primary" id="go-back-btn">Retour au tableau de bord</button>
+        </div>
+      `}
     </div>
   `;
+
+  // Go back button handler
+  const goBackBtn = stepContent.querySelector('#go-back-btn');
+  if (goBackBtn) {
+    goBackBtn.addEventListener('click', onBack);
+  }
+
+  // Mode tabs handler
+  const tabsBg = stepContent.querySelector('#mode-tabs-bg');
+  stepContent.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const newMode = tab.dataset.mode;
+      if (newMode !== mode) {
+        mode = newMode;
+        // Re-render the entire screen to update mode
+        renderScreen(stepContent.closest('.add-expense-screen').parentElement, {
+          userId, onBack, onSuccess, categories
+        });
+      }
+    });
+  });
 
   // Category selection handlers
   stepContent.querySelectorAll('.category-grid-item').forEach(btn => {

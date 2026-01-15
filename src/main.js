@@ -212,6 +212,55 @@ function showAddCategoryModal() {
           />
         </div>
         
+        <!-- Type Selector (Expense/Savings) -->
+        <div>
+          <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Type</label>
+          <div class="type-selector" id="type-selector" style="
+            display: flex;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-full);
+            padding: 4px;
+            position: relative;
+          ">
+            <div class="type-selector-bg" id="type-bg" style="
+              position: absolute;
+              top: 4px;
+              left: 4px;
+              width: calc(50% - 4px);
+              height: calc(100% - 8px);
+              background: var(--color-accent-cyan);
+              border-radius: var(--radius-full);
+              transition: all 0.3s ease;
+            "></div>
+            <button type="button" class="type-option active" data-type="expense" style="
+              flex: 1;
+              padding: var(--space-sm) var(--space-md);
+              border: none;
+              background: transparent;
+              color: var(--color-bg-primary);
+              font-size: var(--text-sm);
+              font-weight: var(--font-semibold);
+              cursor: pointer;
+              position: relative;
+              z-index: 1;
+              transition: color 0.3s ease;
+            ">💸 Dépense</button>
+            <button type="button" class="type-option" data-type="savings" style="
+              flex: 1;
+              padding: var(--space-sm) var(--space-md);
+              border: none;
+              background: transparent;
+              color: var(--color-text-secondary);
+              font-size: var(--text-sm);
+              font-weight: var(--font-semibold);
+              cursor: pointer;
+              position: relative;
+              z-index: 1;
+              transition: color 0.3s ease;
+            ">💰 Épargne</button>
+          </div>
+        </div>
+        
         <!-- Icon Selection -->
         <div>
           <label class="auth-label" style="margin-bottom: var(--space-sm); display: block;">Icône</label>
@@ -327,6 +376,33 @@ function showAddCategoryModal() {
   // State
   let selectedIcon = icons[0];
   let selectedColor = colors[0];
+  let selectedType = 'expense';
+
+  // Type selection (sliding toggle)
+  const typeBg = modal.querySelector('#type-bg');
+  modal.querySelectorAll('.type-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.dataset.type;
+      selectedType = type;
+
+      // Update button styles
+      modal.querySelectorAll('.type-option').forEach(b => {
+        b.style.color = 'var(--color-text-secondary)';
+        b.classList.remove('active');
+      });
+      btn.style.color = 'var(--color-bg-primary)';
+      btn.classList.add('active');
+
+      // Slide background
+      if (type === 'savings') {
+        typeBg.style.left = 'calc(50% + 0px)';
+        typeBg.style.background = '#10B981'; // Emerald green
+      } else {
+        typeBg.style.left = '4px';
+        typeBg.style.background = 'var(--color-accent-cyan)';
+      }
+    });
+  });
 
   // Icon selection
   modal.querySelectorAll('.icon-option').forEach(btn => {
@@ -391,7 +467,7 @@ function showAddCategoryModal() {
     saveBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
 
     try {
-      await createCategory(state.user.id, name, selectedIcon, selectedColor, budget);
+      await createCategory(state.user.id, name, selectedIcon, selectedColor, budget, selectedType);
       modal.remove();
       // Refresh dashboard
       navigateTo('dashboard');

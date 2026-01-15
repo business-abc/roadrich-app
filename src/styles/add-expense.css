@@ -771,3 +771,76 @@
 .expense-action-btn.close:hover {
     background: var(--color-bg-input);
 }
+
+/* ============================================
+   SAVINGS MODE (Emerald Green Theme)
+   ============================================ */
+
+.add-expense-screen.savings-mode .step-dot.active {
+    background: linear-gradient(90deg, #10B981, #059669);
+}
+
+.add-expense-screen.savings-mode .step-dot.completed {
+    background: #10B981;
+}
+
+.add-expense-screen.savings-mode .amount-currency {
+    color: #10B981;
+}
+
+.add-expense-screen.savings-mode .keypad-btn.submit {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.add-expense-screen.savings-mode .keypad-btn.submit:not(:disabled):hover {
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+}
+
+.add-expense-screen.savings-mode .toggle-switch.active {
+    background: linear-gradient(90deg, #10B981, #059669);
+}
+
+.add-expense-screen.savings-mode .chart-area {
+    fill: rgba(16, 185, 129, 0.15);
+}
+
+.add-expense-screen.savings-mode .chart-line {
+    stroke: #10B981;
+}
+
+.add-expense-screen.savings-mode .chart-point {
+    fill: #10B981;
+}
+
+.add-expense-screen.savings-mode .chart-point.new {
+    fill: #10B981;
+    animation: pulse-savings 1s ease infinite;
+}
+
+@keyframes pulse-savings {
+
+    0%,
+    100% {
+        r: 6;
+        filter: drop-shadow(0 0 4px #10B981);
+    }
+
+    50% {
+        r: 8;
+        filter: drop-shadow(0 0 8px #10B981);
+    }
+}
+
+.add-expense-screen.savings-mode .success-icon circle,
+.add-expense-screen.savings-mode .success-icon path {
+    stroke: #10B981;
+}
+
+.add-expense-screen.savings-mode .success-amount {
+    color: #10B981;
+}
+
+.add-expense-screen.savings-mode .category-grid-item.selected {
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+}

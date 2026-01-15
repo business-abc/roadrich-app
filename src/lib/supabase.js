@@ -92,7 +92,7 @@ export async function getCategories(userId) {
   return { data, error };
 }
 
-export async function createCategory(userId, name, icon, color, budgetLimit) {
+export async function createCategory(userId, name, icon, color, budgetLimit, type = 'expense') {
   const { data, error } = await supabase
     .from('categories')
     .insert({
@@ -101,6 +101,7 @@ export async function createCategory(userId, name, icon, color, budgetLimit) {
       icon,
       color,
       budget_limit: budgetLimit,
+      type,
     })
     .select()
     .single();

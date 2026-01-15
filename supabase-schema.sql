@@ -42,9 +42,13 @@ create table if not exists public.categories (
   name text not null,
   icon text not null default '📁',
   color text not null default '#9B5DE5',
+  type text not null default 'expense' check (type in ('expense', 'savings')),
   budget_limit numeric(12,2) default null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Migration for existing tables (run this separately if table already exists):
+-- ALTER TABLE public.categories ADD COLUMN IF NOT EXISTS type text NOT NULL DEFAULT 'expense' CHECK (type IN ('expense', 'savings'));
 
 -- RLS for categories
 alter table public.categories enable row level security;
