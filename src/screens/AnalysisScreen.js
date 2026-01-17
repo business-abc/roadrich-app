@@ -12,9 +12,9 @@ let analysisData = null;
 let container = null;
 let callbacks = null;
 
-export async function renderAnalysisScreen(containerEl, { userId, onBack, onCategorySelect }) {
+export async function renderAnalysisScreen(containerEl, { userId, onBack, onCategorySelect, onAddExpense }) {
   container = containerEl;
-  callbacks = { userId, onBack, onCategorySelect };
+  callbacks = { userId, onBack, onCategorySelect, onAddExpense };
 
   // Show loading state
   container.innerHTML = `
@@ -410,6 +410,11 @@ function setupEventListeners() {
   // Home button
   container.querySelector('#home-btn')?.addEventListener('click', () => {
     if (callbacks.onBack) callbacks.onBack();
+  });
+
+  // Add expense button
+  container.querySelector('#add-expense-btn')?.addEventListener('click', () => {
+    if (callbacks.onAddExpense) callbacks.onAddExpense();
   });
 
   // Time selector

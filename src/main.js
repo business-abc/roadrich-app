@@ -154,7 +154,8 @@ function navigateTo(screen, options = {}) {
         onBack: () => navigateTo('dashboard'),
         onCategorySelect: (categoryId) => {
           navigateTo('expenses-list', { categoryId, fromScreen: 'analysis' });
-        }
+        },
+        onAddExpense: () => navigateTo('add-expense'),
       });
       break;
 
