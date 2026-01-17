@@ -60,6 +60,19 @@ export function generateMonthlyReport(data) {
 
     yPos = 38;
 
+    // === SECTION TITLE: SYNTHÈSE ===
+    // Tech Accent Block
+    doc.setFillColor(0, 245, 212); // Neon Cyan
+    doc.rect(margin, yPos, 2, 4, 'F');
+
+    // Title Text
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(50, 50, 50); // Dark Gray
+    doc.text('SYNTHÈSE', margin + 4, yPos + 3.2);
+
+    yPos += 8;
+
     // === SUMMARY ROW ===
     const expenseVariation = prevTotalExpenses > 0
         ? Math.round(((totalExpenses - prevTotalExpenses) / prevTotalExpenses) * 100)
