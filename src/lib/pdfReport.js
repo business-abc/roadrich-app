@@ -347,7 +347,7 @@ function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(130, 130, 130);
-    doc.text(' ' + percentStr, startX + amountWidth, y + 15);
+    doc.text('  ' + percentStr, startX + amountWidth, y + 15);
 }
 
 function formatNumber(amount) {
