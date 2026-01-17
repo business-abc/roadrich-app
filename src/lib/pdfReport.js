@@ -4,7 +4,7 @@
  */
 
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 /**
  * Generates a monthly expense report PDF
@@ -167,7 +167,7 @@ export function generateMonthlyReport(data) {
     });
 
     // Draw table
-    doc.autoTable({
+    autoTable(doc, {
         startY: yPos,
         head: [['#', 'Catégorie', 'Montant', 'Variation', 'Évolution']],
         body: tableData,
