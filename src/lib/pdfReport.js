@@ -257,9 +257,8 @@ function drawCard(doc, x, y, width, height, { label, value, badge, badgeColor })
 }
 
 function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation }) {
-    // Background
-    doc.setFillColor(248, 249, 250);
-    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+    // Tech Style Background
+    drawTechCardBackground(doc, x, y, width, height, [255, 107, 107]); // Coral Accent
 
     // Label
     doc.setFontSize(7);
@@ -270,9 +269,8 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
     // Expenses amount (larger, bold, black)
     const expenseStr = formatNumber(expenses);
     const incomeStr = formatCurrencyShort(income);
-    const fullText = `${expenseStr} sur ${incomeStr}`;
 
-    // Calculate text widths for positioning
+    // Calculate text widths
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     const expenseWidth = doc.getTextWidth(expenseStr);
@@ -285,22 +283,22 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
     const totalWidth = expenseWidth + surWidth + incomeWidth;
     const startX = x + (width - totalWidth) / 2;
 
-    // Draw expense amount (bold, black)
+    // Draw expense amount
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
     doc.text(expenseStr, startX, y + 14);
 
-    // Draw " sur " (gray)
+    // Draw " sur "
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(130, 130, 130);
+    doc.setTextColor(150, 150, 150);
     doc.text(' sur ', startX + expenseWidth, y + 14);
 
-    // Draw income (gray)
+    // Draw income
     doc.text(incomeStr, startX + expenseWidth + surWidth, y + 14);
 
-    // Variation badge (colored)
+    // Variation badge
     if (variation !== 0) {
         const sign = variation > 0 ? '+' : '';
         const badgeText = `${sign}${variation}% vs préc.`;
@@ -316,9 +314,8 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
 }
 
 function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
-    // Background
-    doc.setFillColor(248, 249, 250);
-    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+    // Tech Style Background
+    drawTechCardBackground(doc, x, y, width, height, [0, 245, 212]); // Cyan Accent
 
     // Label
     doc.setFontSize(7);
@@ -326,39 +323,35 @@ function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
     doc.setTextColor(120, 120, 120);
     doc.text('ÉPARGNE', x + width / 2, y + 6, { align: 'center' });
 
-    // Amount (bold, large)
+    // Amount
     const amountStr = formatNumber(amount);
     const percentStr = `(${percent}%)`;
 
-    // Calculate widths
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     const amountWidth = doc.getTextWidth(amountStr + ' €');
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    const percentWidth = doc.getTextWidth(' ' + percentStr);
+    const percentWidth = doc.getTextWidth('  ' + percentStr);
 
     const totalWidth = amountWidth + percentWidth;
     const startX = x + (width - totalWidth) / 2;
 
-    // Draw amount (bold, black)
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
     doc.text(amountStr + ' €', startX, y + 15);
 
-    // Draw percent (smaller, gray)
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(130, 130, 130);
+    doc.setTextColor(150, 150, 150);
     doc.text('  ' + percentStr, startX + amountWidth, y + 15);
 }
 
 function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
-    // Background
-    doc.setFillColor(248, 249, 250);
-    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+    // Tech Style Background
+    drawTechCardBackground(doc, x, y, width, height, [155, 93, 229]); // Violet Accent
 
     // Label
     doc.setFontSize(7);
@@ -366,11 +359,10 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
     doc.setTextColor(120, 120, 120);
     doc.text('DÉPENSE / JOUR', x + width / 2, y + 6, { align: 'center' });
 
-    // Median amount (bold, large)
+    // Median amount
     const amountStr = formatNumber(median) + ' €';
     const variationStr = variation !== 0 ? `(${variation > 0 ? '+' : ''}${variation}%)` : '';
 
-    // Calculate widths
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     const amountWidth = doc.getTextWidth(amountStr);
@@ -382,13 +374,11 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
     const totalWidth = amountWidth + variationWidth;
     const startX = x + (width - totalWidth) / 2;
 
-    // Draw amount (bold, black)
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
     doc.text(amountStr, startX, y + 15);
 
-    // Draw variation (smaller, colored)
     if (variationStr) {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
@@ -399,6 +389,26 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
         }
         doc.text('  ' + variationStr, startX + amountWidth, y + 15);
     }
+}
+
+function drawTechCardBackground(doc, x, y, width, height, accentColor) {
+    // Background
+    doc.setFillColor(250, 250, 252); // Very light gray/blue
+    doc.setDrawColor(230, 230, 235); // Light border
+    doc.roundedRect(x, y, width, height, 3, 3, 'FD');
+
+    // Left Accent Border
+    doc.setFillColor(...accentColor);
+    // Draw a filled rounded rect on the left edge, but clipped - or simpler: a bar
+    // Using a path to draw left rounded corner
+    doc.saveGraphicsState();
+    doc.rect(x, y, width, height, 'CNZ'); // Set clipping area
+    doc.rect(x, y, 4, height, 'F'); // 4mm wide bar
+    doc.restoreGraphicsState();
+
+    // Redraw border on top to clean up
+    doc.setDrawColor(230, 230, 235);
+    doc.roundedRect(x, y, width, height, 3, 3, 'S');
 }
 
 function calculateMedianDailyExpense(expenses) {
