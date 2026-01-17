@@ -26,6 +26,22 @@ export function generateMonthlyReport(data) {
     const margin = 15;
     let yPos = margin;
 
+    // === WATERMARK ===
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({ opacity: 0.06 }));
+    doc.setFontSize(180);
+    doc.setFont('courier', 'bold');
+    doc.setTextColor(0, 0, 0);
+
+    // Center the text and rotate slightly
+    const watermarkX = pageWidth / 2;
+    const watermarkY = pageHeight / 2 + 20;
+    doc.text('RR', watermarkX, watermarkY, {
+        align: 'center',
+        angle: -30
+    });
+    doc.restoreGraphicsState();
+
     // === HEADER BAR ===
     doc.setFillColor(20, 20, 25);
     doc.rect(0, 0, pageWidth, 28, 'F');
