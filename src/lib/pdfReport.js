@@ -76,13 +76,11 @@ export function generateMonthlyReport(data) {
         variation: expenseVariation
     });
 
-    // Card 2: Savings (amount + %)
+    // Card 2: Savings (amount prominent, % subdued)
     const savingsAmount = income - totalExpenses;
-    drawCard(doc, margin + cardWidth + 4, yPos, cardWidth, cardHeight, {
-        label: 'ÉPARGNE',
-        value: `${formatNumber(savingsAmount)} (${savingsRate}%)`,
-        badge: '',
-        badgeColor: [100, 100, 100]
+    drawSavingsCard(doc, margin + cardWidth + 4, yPos, cardWidth, cardHeight, {
+        amount: savingsAmount,
+        percent: savingsRate
     });
 
     // Card 3: Revenue
@@ -310,6 +308,46 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
         }
         doc.text(badgeText, x + width / 2, y + 21, { align: 'center' });
     }
+}
+
+function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
+    // Background
+    doc.setFillColor(248, 249, 250);
+    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+
+    // Label
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('ÉPARGNE', x + width / 2, y + 6, { align: 'center' });
+
+    // Amount (bold, large)
+    const amountStr = formatNumber(amount);
+    const percentStr = `(${percent}%)`;
+
+    // Calculate widths
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    const amountWidth = doc.getTextWidth(amountStr + ' €');
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const percentWidth = doc.getTextWidth(' ' + percentStr);
+
+    const totalWidth = amountWidth + percentWidth;
+    const startX = x + (width - totalWidth) / 2;
+
+    // Draw amount (bold, black)
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(amountStr + ' €', startX, y + 15);
+
+    // Draw percent (smaller, gray)
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 130, 130);
+    doc.text(' ' + percentStr, startX + amountWidth, y + 15);
 }
 
 function formatNumber(amount) {
