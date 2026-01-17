@@ -28,17 +28,16 @@ export function generateMonthlyReport(data) {
 
     // === WATERMARK ===
     doc.saveGraphicsState();
-    doc.setGState(new doc.GState({ opacity: 0.06 }));
-    doc.setFontSize(180);
-    doc.setFont('courier', 'bold');
+    doc.setGState(new doc.GState({ opacity: 0.04 }));
+    doc.setFontSize(240);
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
 
-    // Center the text and rotate slightly
+    // Center the text (no rotation for clean modern look)
     const watermarkX = pageWidth / 2;
-    const watermarkY = pageHeight / 2 + 20;
+    const watermarkY = pageHeight / 2 + 30;
     doc.text('RR', watermarkX, watermarkY, {
-        align: 'center',
-        angle: -30
+        align: 'center'
     });
     doc.restoreGraphicsState();
 
