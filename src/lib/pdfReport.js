@@ -61,16 +61,7 @@ export function generateMonthlyReport(data) {
     yPos = 38;
 
     // === SECTION TITLE: SYNTHÈSE ===
-    // Tech Accent Block
-    doc.setFillColor(0, 245, 212); // Neon Cyan
-    doc.rect(margin, yPos, 2, 4, 'F');
-
-    // Title Text
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(50, 50, 50); // Dark Gray
-    doc.text('SYNTHÈSE', margin + 4, yPos + 3.2);
-
+    drawSectionTitle(doc, 'SYNTHÈSE', margin, yPos);
     yPos += 8;
 
     // === SUMMARY ROW ===
@@ -112,11 +103,8 @@ export function generateMonthlyReport(data) {
     yPos += cardHeight + 10;
 
     // === TOP 10 CATEGORIES TABLE ===
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(40, 40, 40);
-    doc.text('Top 10 Catégories', margin, yPos);
-    yPos += 5;
+    drawSectionTitle(doc, 'TOP 10 CATÉGORIES', margin, yPos);
+    yPos += 8;
 
     // Prepare data
     const rankedCategories = categories
@@ -210,11 +198,8 @@ export function generateMonthlyReport(data) {
     const insights = generateInsights(data, rankedCategories, expenseVariation, savingsRate);
 
     if (insights.length > 0 && yPos < pageHeight - 40) {
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(40, 40, 40);
-        doc.text('Analyse', margin, yPos);
-        yPos += 5;
+        drawSectionTitle(doc, 'ANALYSE', margin, yPos);
+        yPos += 8;
 
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
@@ -463,6 +448,18 @@ function calculateMedianDailyExpense(expenses) {
     } else {
         return Math.round(values[mid]);
     }
+}
+
+function drawSectionTitle(doc, title, x, y) {
+    // Tech Accent Block
+    doc.setFillColor(0, 245, 212); // Neon Cyan
+    doc.rect(x, y, 2, 4, 'F');
+
+    // Title Text
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(50, 50, 50); // Dark Gray
+    doc.text(title, x + 4, y + 3.2);
 }
 
 function formatNumber(amount) {
