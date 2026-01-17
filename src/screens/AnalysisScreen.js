@@ -475,7 +475,9 @@ function setupEventListeners() {
         prevTotalExpenses,
         income: profile?.monthly_income || 0,
         categories: categoryTotals,
-        prevCategories: prevCategoryTotals
+        prevCategories: prevCategoryTotals,
+        expenses: expenses,
+        prevExpenses: prevExpenses
       });
       console.log('PDF generated successfully');
     } catch (error) {

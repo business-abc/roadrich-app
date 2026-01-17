@@ -16,7 +16,9 @@ export function generateMonthlyReport(data) {
         prevTotalExpenses,
         income,
         categories,
-        prevCategories
+        prevCategories,
+        expenses = [],
+        prevExpenses = []
     } = data;
 
     // Create PDF (A4 format)
@@ -83,12 +85,15 @@ export function generateMonthlyReport(data) {
         percent: savingsRate
     });
 
-    // Card 3: Revenue
-    drawCard(doc, margin + (cardWidth + 4) * 2, yPos, cardWidth, cardHeight, {
-        label: 'REVENUS',
-        value: formatCurrency(income),
-        badge: '',
-        badgeColor: [100, 100, 100]
+    // Card 3: Median daily expense
+    const medianDaily = calculateMedianDailyExpense(expenses);
+    const prevMedianDaily = calculateMedianDailyExpense(prevExpenses);
+    const dailyVariation = prevMedianDaily > 0
+        ? Math.round(((medianDaily - prevMedianDaily) / prevMedianDaily) * 100)
+        : 0;
+    drawDailyExpenseCard(doc, margin + (cardWidth + 4) * 2, yPos, cardWidth, cardHeight, {
+        median: medianDaily,
+        variation: dailyVariation
     });
 
     yPos += cardHeight + 10;
@@ -348,6 +353,79 @@ function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(130, 130, 130);
     doc.text('  ' + percentStr, startX + amountWidth, y + 15);
+}
+
+function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
+    // Background
+    doc.setFillColor(248, 249, 250);
+    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+
+    // Label
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('DÉPENSE / JOUR', x + width / 2, y + 6, { align: 'center' });
+
+    // Median amount (bold, large)
+    const amountStr = formatNumber(median) + ' €';
+    const variationStr = variation !== 0 ? `(${variation > 0 ? '+' : ''}${variation}%)` : '';
+
+    // Calculate widths
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    const amountWidth = doc.getTextWidth(amountStr);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const variationWidth = variationStr ? doc.getTextWidth('  ' + variationStr) : 0;
+
+    const totalWidth = amountWidth + variationWidth;
+    const startX = x + (width - totalWidth) / 2;
+
+    // Draw amount (bold, black)
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(amountStr, startX, y + 15);
+
+    // Draw variation (smaller, colored)
+    if (variationStr) {
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        if (variation <= 0) {
+            doc.setTextColor(34, 197, 94); // Green
+        } else {
+            doc.setTextColor(239, 68, 68); // Red
+        }
+        doc.text('  ' + variationStr, startX + amountWidth, y + 15);
+    }
+}
+
+function calculateMedianDailyExpense(expenses) {
+    if (!expenses || expenses.length === 0) return 0;
+
+    // Group expenses by date
+    const dailyTotals = {};
+    expenses.forEach(exp => {
+        const date = exp.date || exp.created_at?.substring(0, 10);
+        if (date) {
+            dailyTotals[date] = (dailyTotals[date] || 0) + exp.amount;
+        }
+    });
+
+    // Get array of daily totals
+    const values = Object.values(dailyTotals);
+    if (values.length === 0) return 0;
+
+    // Sort and find median
+    values.sort((a, b) => a - b);
+    const mid = Math.floor(values.length / 2);
+
+    if (values.length % 2 === 0) {
+        return Math.round((values[mid - 1] + values[mid]) / 2);
+    } else {
+        return Math.round(values[mid]);
+    }
 }
 
 function formatNumber(amount) {
