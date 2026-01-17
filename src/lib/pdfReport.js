@@ -264,7 +264,7 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
     doc.text('DÉPENSES', x + width / 2, y + 6, { align: 'center' });
 
     // Expenses amount (larger, bold, black)
-    const expenseStr = formatCurrencyShort(expenses);
+    const expenseStr = formatNumber(expenses);
     const incomeStr = formatCurrencyShort(income);
     const fullText = `${expenseStr} sur ${incomeStr}`;
 
@@ -309,6 +309,11 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
         }
         doc.text(badgeText, x + width / 2, y + 21, { align: 'center' });
     }
+}
+
+function formatNumber(amount) {
+    const num = Math.round(amount);
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
 function formatCurrencyShort(amount) {
