@@ -392,23 +392,14 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
 }
 
 function drawTechCardBackground(doc, x, y, width, height, accentColor) {
-    // Background
-    doc.setFillColor(250, 250, 252); // Very light gray/blue
-    doc.setDrawColor(230, 230, 235); // Light border
+    // Background with border
+    doc.setFillColor(250, 250, 252);
+    doc.setDrawColor(230, 230, 235);
     doc.roundedRect(x, y, width, height, 3, 3, 'FD');
 
-    // Left Accent Border
+    // Left Accent Bar (simple rectangle)
     doc.setFillColor(...accentColor);
-    // Draw a filled rounded rect on the left edge, but clipped - or simpler: a bar
-    // Using a path to draw left rounded corner
-    doc.saveGraphicsState();
-    doc.rect(x, y, width, height, 'CNZ'); // Set clipping area
-    doc.rect(x, y, 4, height, 'F'); // 4mm wide bar
-    doc.restoreGraphicsState();
-
-    // Redraw border on top to clean up
-    doc.setDrawColor(230, 230, 235);
-    doc.roundedRect(x, y, width, height, 3, 3, 'S');
+    doc.rect(x + 0.5, y + 3, 2.5, height - 6, 'F');
 }
 
 function calculateMedianDailyExpense(expenses) {
