@@ -257,13 +257,13 @@ function drawCard(doc, x, y, width, height, { label, value, badge, badgeColor })
 }
 
 function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation }) {
-    // Tech Style Background
+    // Tech Style Background (Dark)
     drawTechCardBackground(doc, x, y, width, height, [255, 107, 107]); // Coral Accent
 
     // Label
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
+    doc.setTextColor(180, 180, 180); // Light Gray
     doc.text('DÉPENSES', x + width / 2, y + 6, { align: 'center' });
 
     // Expenses amount (larger, bold, black)
@@ -286,13 +286,13 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
     // Draw expense amount
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
+    doc.setTextColor(255, 255, 255); // White
     doc.text(expenseStr, startX, y + 14);
 
     // Draw " sur "
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(150, 150, 150);
+    doc.setTextColor(150, 150, 150); // Gray
     doc.text(' sur ', startX + expenseWidth, y + 14);
 
     // Draw income
@@ -305,22 +305,22 @@ function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation
         doc.setFontSize(7);
         doc.setFont('helvetica', 'normal');
         if (variation <= 0) {
-            doc.setTextColor(34, 197, 94); // Green
+            doc.setTextColor(0, 245, 212); // Neon Cyan/Green
         } else {
-            doc.setTextColor(239, 68, 68); // Red
+            doc.setTextColor(255, 71, 87); // Neon Red
         }
         doc.text(badgeText, x + width / 2, y + 21, { align: 'center' });
     }
 }
 
 function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
-    // Tech Style Background
+    // Tech Style Background (Dark)
     drawTechCardBackground(doc, x, y, width, height, [0, 245, 212]); // Cyan Accent
 
     // Label
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
+    doc.setTextColor(180, 180, 180);
     doc.text('ÉPARGNE', x + width / 2, y + 6, { align: 'center' });
 
     // Amount
@@ -340,7 +340,7 @@ function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
+    doc.setTextColor(255, 255, 255); // White
     doc.text(amountStr + ' €', startX, y + 15);
 
     doc.setFontSize(9);
@@ -350,13 +350,13 @@ function drawSavingsCard(doc, x, y, width, height, { amount, percent }) {
 }
 
 function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
-    // Tech Style Background
+    // Tech Style Background (Dark)
     drawTechCardBackground(doc, x, y, width, height, [155, 93, 229]); // Violet Accent
 
     // Label
     doc.setFontSize(7);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
+    doc.setTextColor(180, 180, 180);
     doc.text('DÉPENSE / JOUR', x + width / 2, y + 6, { align: 'center' });
 
     // Median amount
@@ -376,30 +376,30 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
+    doc.setTextColor(255, 255, 255); // White
     doc.text(amountStr, startX, y + 15);
 
     if (variationStr) {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         if (variation <= 0) {
-            doc.setTextColor(34, 197, 94); // Green
+            doc.setTextColor(0, 245, 212); // Neon Cyan
         } else {
-            doc.setTextColor(239, 68, 68); // Red
+            doc.setTextColor(255, 71, 87); // Neon Red
         }
         doc.text('  ' + variationStr, startX + amountWidth, y + 15);
     }
 }
 
 function drawTechCardBackground(doc, x, y, width, height, accentColor) {
-    // Background with border
-    doc.setFillColor(250, 250, 252);
-    doc.setDrawColor(230, 230, 235);
+    // Background with border (Dark Mode)
+    doc.setFillColor(30, 30, 30); // Dark Anthracite #1E1E1E approx
+    doc.setDrawColor(60, 60, 60); // Dark gray border
     doc.roundedRect(x, y, width, height, 3, 3, 'FD');
 
     // Left Accent Bar (simple rectangle)
     doc.setFillColor(...accentColor);
-    doc.rect(x + 0.5, y + 3, 2.5, height - 6, 'F');
+    doc.rect(x + 1, y + 4, 1.5, height - 8, 'F'); // Thinner, detached bar for tech look
 }
 
 function calculateMedianDailyExpense(expenses) {
