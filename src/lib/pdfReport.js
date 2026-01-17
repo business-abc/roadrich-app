@@ -76,20 +76,21 @@ export function generateMonthlyReport(data) {
         variation: expenseVariation
     });
 
-    // Card 2: Revenue
+    // Card 2: Savings (amount + %)
+    const savingsAmount = income - totalExpenses;
     drawCard(doc, margin + cardWidth + 4, yPos, cardWidth, cardHeight, {
-        label: 'REVENUS',
-        value: formatCurrency(income),
+        label: 'ÉPARGNE',
+        value: `${formatNumber(savingsAmount)} (${savingsRate}%)`,
         badge: '',
         badgeColor: [100, 100, 100]
     });
 
-    // Card 3: Remaining / Savings Rate
+    // Card 3: Revenue
     drawCard(doc, margin + (cardWidth + 4) * 2, yPos, cardWidth, cardHeight, {
-        label: 'ÉPARGNE',
-        value: `${savingsRate}%`,
-        badge: remaining >= 0 ? formatCurrency(remaining) : formatCurrency(remaining),
-        badgeColor: remaining >= 0 ? [34, 197, 94] : [239, 68, 68]
+        label: 'REVENUS',
+        value: formatCurrency(income),
+        badge: '',
+        badgeColor: [100, 100, 100]
     });
 
     yPos += cardHeight + 10;
