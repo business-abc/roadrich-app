@@ -52,7 +52,7 @@ export function generateMonthlyReport(data) {
 
     // Draw 3 summary cards in a row
     const cardWidth = (pageWidth - margin * 2 - 8) / 3;
-    const cardHeight = 22;
+    const cardHeight = 26;
 
     // Card 1: Total Expenses
     drawCard(doc, margin, yPos, cardWidth, cardHeight, {
@@ -118,7 +118,7 @@ export function generateMonthlyReport(data) {
 
         return [
             `#${currentRank}`,
-            `${cat.icon || '•'} ${cat.name}`,
+            cat.name,
             formatCurrency(cat.total),
             `${percent}%`,
             variation === 0 ? '—' : (variation > 0 ? `+${variation}%` : `${variation}%`),
@@ -239,12 +239,10 @@ function drawCard(doc, x, y, width, height, { label, value, badge, badgeColor })
 }
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount);
+    // Manual formatting to avoid encoding issues in PDF
+    const num = Math.round(amount);
+    const formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return `${formatted} €`;
 }
 
 function getVariationBadge(variation, inverse = false) {
