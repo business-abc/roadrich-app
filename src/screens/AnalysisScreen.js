@@ -4,6 +4,7 @@
  */
 
 import { getExpenses, getCategories, getProfile } from '../lib/supabase.js';
+import { generateMonthlyReport } from '../lib/pdfReport.js';
 
 // State
 let currentPeriod = 'current'; // 'current', 'last', 'year'
@@ -102,7 +103,13 @@ function renderScreen() {
           </svg>
         </button>
         <h1 class="analysis-title">Analyse</h1>
-        <div style="width: 44px;"></div>
+        <button class="analysis-export-btn" id="export-pdf-btn" aria-label="Exporter PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
       </header>
 
       <!-- Time Selector -->
@@ -415,6 +422,59 @@ function setupEventListeners() {
   // Add expense button
   container.querySelector('#add-expense-btn')?.addEventListener('click', () => {
     if (callbacks.onAddExpense) callbacks.onAddExpense();
+  });
+
+  // Export PDF button
+  container.querySelector('#export-pdf-btn')?.addEventListener('click', () => {
+    const { expenses, prevExpenses, categories, profile } = analysisData;
+
+    // Calculate totals
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const prevTotalExpenses = prevExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+    // Get month name
+    const now = new Date();
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    let monthName;
+    if (currentPeriod === 'current') {
+      monthName = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+    } else if (currentPeriod === 'last') {
+      const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      const year = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      monthName = `${monthNames[lastMonth]} ${year}`;
+    } else {
+      monthName = `Année ${now.getFullYear()}`;
+    }
+
+    // Calculate category totals
+    const categoryTotals = categories
+      .filter(cat => cat.type === 'expense')
+      .map(cat => {
+        const total = expenses
+          .filter(e => e.category_id === cat.id)
+          .reduce((sum, e) => sum + e.amount, 0);
+        return { ...cat, total };
+      });
+
+    const prevCategoryTotals = categories
+      .filter(cat => cat.type === 'expense')
+      .map(cat => {
+        const total = prevExpenses
+          .filter(e => e.category_id === cat.id)
+          .reduce((sum, e) => sum + e.amount, 0);
+        return { ...cat, total };
+      });
+
+    // Generate PDF
+    generateMonthlyReport({
+      monthName,
+      totalExpenses,
+      prevTotalExpenses,
+      income: profile?.monthly_income || 0,
+      categories: categoryTotals,
+      prevCategories: prevCategoryTotals
+    });
   });
 
   // Time selector
