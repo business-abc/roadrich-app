@@ -467,14 +467,21 @@ function setupEventListeners() {
       });
 
     // Generate PDF
-    generateMonthlyReport({
-      monthName,
-      totalExpenses,
-      prevTotalExpenses,
-      income: profile?.monthly_income || 0,
-      categories: categoryTotals,
-      prevCategories: prevCategoryTotals
-    });
+    try {
+      console.log('Generating PDF with data:', { monthName, totalExpenses, categoryTotals: categoryTotals.length });
+      generateMonthlyReport({
+        monthName,
+        totalExpenses,
+        prevTotalExpenses,
+        income: profile?.monthly_income || 0,
+        categories: categoryTotals,
+        prevCategories: prevCategoryTotals
+      });
+      console.log('PDF generated successfully');
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Erreur lors de la génération du PDF: ' + error.message);
+    }
   });
 
   // Time selector
@@ -483,7 +490,7 @@ function setupEventListeners() {
       const period = btn.dataset.period;
       if (period !== currentPeriod) {
         currentPeriod = period;
-        selectedCategory = null; // Reset filter on period change
+        selectedCategory = null;
         container.querySelector('.analysis-content').style.opacity = '0.5';
         await loadAnalysisData(callbacks.userId);
         renderScreen();
@@ -498,8 +505,6 @@ function setupEventListeners() {
     if (curveContainer) {
       curveContainer.innerHTML = '';
       curveContainer.outerHTML = renderGhostCurve();
-      // Re-attach filter listener
-      container.querySelector('#category-filter')?.addEventListener('change', arguments.callee);
     }
   });
 
@@ -508,22 +513,19 @@ function setupEventListeners() {
   const carouselDots = container.querySelectorAll('.carousel-dot');
 
   if (carouselTrack && carouselDots.length > 0) {
-    // Scroll event to update active dot
     carouselTrack.addEventListener('scroll', () => {
       const scrollLeft = carouselTrack.scrollLeft;
       const cardWidth = carouselTrack.querySelector('.carousel-card')?.offsetWidth || 1;
-      const gap = 16; // var(--space-md)
+      const gap = 16;
       const activeIndex = Math.round(scrollLeft / (cardWidth + gap));
-
       carouselDots.forEach((dot, i) => {
         dot.classList.toggle('active', i === activeIndex);
       });
     });
 
-    // Click on dots to scroll
     carouselDots.forEach(dot => {
       dot.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent card click
+        e.stopPropagation();
         const index = parseInt(dot.dataset.index);
         const card = carouselTrack.querySelector(`.carousel-card[data-index="${index}"]`);
         if (card) {
@@ -532,7 +534,6 @@ function setupEventListeners() {
       });
     });
 
-    // Click on cards to navigate
     container.querySelectorAll('.carousel-card').forEach(card => {
       card.addEventListener('click', () => {
         const categoryId = card.dataset.categoryId;
