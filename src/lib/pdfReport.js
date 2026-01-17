@@ -69,12 +69,11 @@ export function generateMonthlyReport(data) {
     const cardWidth = (pageWidth - margin * 2 - 8) / 3;
     const cardHeight = 26;
 
-    // Card 1: Total Expenses
-    drawCard(doc, margin, yPos, cardWidth, cardHeight, {
-        label: 'DÉPENSES',
-        value: formatCurrency(totalExpenses),
-        badge: getVariationBadge(expenseVariation, true),
-        badgeColor: expenseVariation <= 0 ? [34, 197, 94] : [239, 68, 68]
+    // Card 1: Expenses vs Income (custom layout)
+    drawExpenseCard(doc, margin, yPos, cardWidth, cardHeight, {
+        expenses: totalExpenses,
+        income: income,
+        variation: expenseVariation
     });
 
     // Card 2: Revenue
@@ -251,6 +250,71 @@ function drawCard(doc, x, y, width, height, { label, value, badge, badgeColor })
         doc.setTextColor(...badgeColor);
         doc.text(badge, x + width / 2, y + 20, { align: 'center' });
     }
+}
+
+function drawExpenseCard(doc, x, y, width, height, { expenses, income, variation }) {
+    // Background
+    doc.setFillColor(248, 249, 250);
+    doc.roundedRect(x, y, width, height, 2, 2, 'F');
+
+    // Label
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text('DÉPENSES', x + width / 2, y + 6, { align: 'center' });
+
+    // Expenses amount (larger, bold, black)
+    const expenseStr = formatCurrencyShort(expenses);
+    const incomeStr = formatCurrencyShort(income);
+    const fullText = `${expenseStr} sur ${incomeStr}`;
+
+    // Calculate text widths for positioning
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    const expenseWidth = doc.getTextWidth(expenseStr);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const surWidth = doc.getTextWidth(' sur ');
+    const incomeWidth = doc.getTextWidth(incomeStr);
+
+    const totalWidth = expenseWidth + surWidth + incomeWidth;
+    const startX = x + (width - totalWidth) / 2;
+
+    // Draw expense amount (bold, black)
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text(expenseStr, startX, y + 14);
+
+    // Draw " sur " (gray)
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(130, 130, 130);
+    doc.text(' sur ', startX + expenseWidth, y + 14);
+
+    // Draw income (gray)
+    doc.text(incomeStr, startX + expenseWidth + surWidth, y + 14);
+
+    // Variation badge (colored)
+    if (variation !== 0) {
+        const sign = variation > 0 ? '+' : '';
+        const badgeText = `${sign}${variation}% vs préc.`;
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        if (variation <= 0) {
+            doc.setTextColor(34, 197, 94); // Green
+        } else {
+            doc.setTextColor(239, 68, 68); // Red
+        }
+        doc.text(badgeText, x + width / 2, y + 21, { align: 'center' });
+    }
+}
+
+function formatCurrencyShort(amount) {
+    const num = Math.round(amount);
+    const formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    return `${formatted} €`;
 }
 
 function formatCurrency(amount) {
