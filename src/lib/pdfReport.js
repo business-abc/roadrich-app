@@ -384,43 +384,45 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
             doc.setTextColor(0, 245, 212); // Neon Cyan
         } else {
             doc.setTextColor(255, 71, 87); // Neon Red
+            doc.text('  ' + variationStr, startX + amountWidth, y + 15);
         }
-        doc.text('  ' + variationStr, startX + amountWidth, y + 15);
     }
 }
 
-function drawTechCardBackground(doc, x, y, width, height, accentColor) {
-    // 1. Dark Background
-    doc.setFillColor(26, 26, 30); // Dark Anthracite slightly blueish
+function drawTechCardBackground(doc, x, y, width, height) {
+    // 1. Drop Shadow (Offset + Blur approximation via opacity)
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({ opacity: 0.15 }));
+    doc.setFillColor(0, 0, 0);
+    doc.roundedRect(x + 1.5, y + 1.5, width, height, 3, 3, 'F');
+    doc.restoreGraphicsState();
 
-    // 2. Neon Border
-    doc.setDrawColor(...accentColor);
+    // 2. Background Gradient (Dark Tech)
+    // Simulating vertical gradient from #2A2A2A to #151515
+    doc.saveGraphicsState();
+    // Clip to rounded rect
+    doc.roundedRect(x, y, width, height, 3, 3, 'CNZ'); // Set clipping path
+
+    // Draw gradient lines
+    const startColor = [45, 45, 50]; // Lighter top
+    const endColor = [20, 20, 25];   // Darker bottom
+    const steps = 20;
+    const stepHeight = height / steps;
+
+    for (let i = 0; i < steps; i++) {
+        const ratio = i / steps;
+        const r = Math.round(startColor[0] + (endColor[0] - startColor[0]) * ratio);
+        const g = Math.round(startColor[1] + (endColor[1] - startColor[1]) * ratio);
+        const b = Math.round(startColor[2] + (endColor[2] - startColor[2]) * ratio);
+        doc.setFillColor(r, g, b);
+        doc.rect(x, y + (i * stepHeight), width, stepHeight + 0.5, 'F'); // +0.5 to overlap seams
+    }
+    doc.restoreGraphicsState();
+
+    // 3. Unified Blue Border (#00BBF9 - Electric Blue)
+    doc.setDrawColor(0, 187, 249);
     doc.setLineWidth(0.4);
-
-    // Draw base background + border
-    doc.roundedRect(x, y, width, height, 3, 3, 'FD');
-
-    // 3. "Light Effect" / Inner Glow
-    // Add a very subtle fill of the accent color to simulate light/glow inside
-    doc.saveGraphicsState();
-    doc.setGState(new doc.GState({ opacity: 0.05 }));
-    doc.setFillColor(...accentColor);
-    doc.roundedRect(x, y, width, height, 3, 3, 'F');
-    doc.restoreGraphicsState();
-
-    // 4. Top Highlight (Glassy reflection effect)
-    // Draw a white gradient-like block at the top
-    doc.saveGraphicsState();
-    doc.setGState(new doc.GState({ opacity: 0.03 }));
-    doc.setFillColor(255, 255, 255);
-    // Approximate top half without clipping (to avoid errors)
-    // We just draw a rectangle slightly from top, but since we can't clip easily,
-    // we'll just let the inner glow be the main effect to avoid 'invalid argument' errors.
-    // Instead, let's add a "Glow Center" circle
-    const centerX = x + width / 2;
-    const centerY = y + height / 2;
-    // doc.circle(centerX, centerY, height/1.5, 'F'); // Too risky if circle goes out
-    doc.restoreGraphicsState();
+    doc.roundedRect(x, y, width, height, 3, 3, 'S');
 }
 
 function calculateMedianDailyExpense(expenses) {
