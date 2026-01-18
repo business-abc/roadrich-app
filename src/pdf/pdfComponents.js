@@ -128,8 +128,7 @@ export function createBentoCard(title, value, subtitle = '', accentColor = color
                 alignment: 'center'
             }
         ],
-        width: cardWidth,
-        margin: [0, 0, 15, 0]
+        width: cardWidth
     };
 }
 
@@ -143,6 +142,8 @@ export function createBentoRow(cards) {
         columns: cards.map(card =>
             createBentoCard(card.title, card.value, card.subtitle, card.accent || colors.cyan)
         ),
+        columnGap: 20,
+        alignment: 'center',
         margin: [0, 0, 0, 15]
     };
 }
