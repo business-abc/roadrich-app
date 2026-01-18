@@ -145,49 +145,62 @@ export function generateMonthlyReport(data) {
         ];
     });
 
-    // Draw table
+    // Draw table (Tech Dark Style)
     autoTable(doc, {
         startY: yPos,
-        head: [['Rang', 'Catégorie', 'Montant', '% Total', 'Variation', 'Évol.']],
+        head: [['RANG', 'CATÉGORIE', 'MONTANT', '% TOTAL', 'VARIATION', 'ÉVOL.']],
         body: tableData,
         margin: { left: margin, right: margin },
         styles: {
             fontSize: 8,
-            cellPadding: 2.5,
+            cellPadding: 3,
             overflow: 'linebreak',
-            lineColor: [230, 230, 230],
-            lineWidth: 0.1
+            lineColor: [0, 187, 249], // Electric Blue Borders for all cells
+            lineWidth: 0.1,
+            textColor: [220, 220, 220], // Light Gray Text
+            fillColor: [26, 26, 30] // Dark Anthracite Body
         },
         headStyles: {
-            fillColor: [245, 245, 245],
-            textColor: [80, 80, 80],
+            fillColor: [0, 0, 0], // Pure Black Header
+            textColor: [0, 187, 249], // Electric Blue Text
             fontStyle: 'bold',
-            fontSize: 7
+            fontSize: 7,
+            halign: 'center',
+            lineWidth: 0.2, // Slightly thicker border for header
+            lineColor: [0, 187, 249]
         },
         bodyStyles: {
-            textColor: [50, 50, 50]
+            textColor: [255, 255, 255] // White Text
         },
         alternateRowStyles: {
-            fillColor: [252, 252, 252]
+            fillColor: [32, 32, 36] // Slightly lighter/darker alternate
         },
         columnStyles: {
-            0: { halign: 'center', cellWidth: 12, fontStyle: 'bold' },
+            0: { halign: 'center', cellWidth: 15, fontStyle: 'bold', textColor: [0, 245, 212] }, // Rang in Cyan
             1: { cellWidth: 45 },
             2: { halign: 'right', cellWidth: 28, fontStyle: 'bold' },
-            3: { halign: 'center', cellWidth: 18 },
+            3: { halign: 'center', cellWidth: 18, textColor: [150, 150, 150] }, // % in Gray
             4: { halign: 'center', cellWidth: 20 },
             5: { halign: 'center', cellWidth: 15 }
         },
         didParseCell: function (data) {
+            // Variation Column Colors
             if (data.column.index === 4 && data.section === 'body') {
                 const val = data.cell.raw;
-                if (val.includes('-')) data.cell.styles.textColor = [34, 197, 94];
-                else if (val.includes('+')) data.cell.styles.textColor = [239, 68, 68];
+                if (val.includes('-')) data.cell.styles.textColor = [0, 245, 212]; // Neon Cyan
+                else if (val.includes('+')) data.cell.styles.textColor = [255, 71, 87]; // Neon Red
             }
+            // Evolution Column Colors
             if (data.column.index === 5 && data.section === 'body') {
                 const val = data.cell.raw;
-                if (val.includes('▲')) data.cell.styles.textColor = [239, 68, 68];
-                else if (val.includes('▼')) data.cell.styles.textColor = [34, 197, 94];
+                if (val.includes('▲')) data.cell.styles.textColor = [255, 71, 87]; // Red (Up in rank usually means bad for expense? wait, rank 1 is highest expense. If rank increases (1->5), it's good. Wait, rank 1 is biggest expense. If rank goes 5->1, it got worse. arrow Up usually means number went up. 1 to 5 is number up. So rank change +4. 
+                // Let's stick to arrows: Up arrow = Red (Bad, moved up in expense list), Down arrow = Green (Good, moved down).
+                // Existing logic: currentRank < prevRank (e.g. 1 < 5) -> moved up top list -> Bad? No, previously 5th, now 1st. Bad. 
+                // Code says: if (currentRank < prevRank) rankChange = `▲${prevRank - currentRank}`;
+                // So if current is 1 and prev was 5, 1 < 5. change is 4 positions up. Arrow Up. Red. Correct.
+
+                if (val.includes('▲')) data.cell.styles.textColor = [255, 71, 87]; // Red
+                else if (val.includes('▼')) data.cell.styles.textColor = [0, 245, 212]; // Green
             }
         }
     });
