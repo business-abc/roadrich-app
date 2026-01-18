@@ -89,7 +89,7 @@ export function createSectionTitle(title) {
  */
 export function createBentoCard(title, value, subtitle = '', accentColor = colors.cyan) {
     const cardWidth = 170;
-    const cardHeight = 60;
+    const cardHeight = 75;
 
     return {
         stack: [
@@ -121,10 +121,10 @@ export function createBentoCard(title, value, subtitle = '', accentColor = color
             {
                 stack: [
                     { text: title, style: 'kpiLabel' },
-                    { text: value, style: 'kpiValue', margin: [0, 4, 0, 2] },
+                    { text: value, style: 'kpiValue', margin: [0, 6, 0, 4] },
                     { text: subtitle, style: 'kpiSubvalue' }
                 ],
-                margin: [0, -50, 0, 0],  // Overlay on canvas
+                margin: [0, -65, 0, 0],  // Overlay on canvas
                 alignment: 'center'
             }
         ],
