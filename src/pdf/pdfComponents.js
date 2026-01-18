@@ -88,7 +88,7 @@ export function createSectionTitle(title) {
  * @returns {object} pdfmake content object
  */
 export function createBentoCard(title, value, subtitle = '', accentColor = colors.cyan) {
-    const cardWidth = 170;
+    const cardWidth = 155;
     const cardHeight = 75;
 
     return {
