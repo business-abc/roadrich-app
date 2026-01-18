@@ -390,39 +390,34 @@ function drawDailyExpenseCard(doc, x, y, width, height, { median, variation }) {
 }
 
 function drawTechCardBackground(doc, x, y, width, height) {
-    // 1. Drop Shadow (Offset + Blur approximation via opacity)
+    // 1. Drop Shadow
     doc.saveGraphicsState();
     doc.setGState(new doc.GState({ opacity: 0.15 }));
     doc.setFillColor(0, 0, 0);
     doc.roundedRect(x + 1.5, y + 1.5, width, height, 3, 3, 'F');
     doc.restoreGraphicsState();
 
-    // 2. Background Gradient (Dark Tech)
-    // Simulating vertical gradient from #2A2A2A to #151515
-    doc.saveGraphicsState();
-    // Clip to rounded rect
-    doc.roundedRect(x, y, width, height, 3, 3, 'CNZ'); // Set clipping path
+    // 2. Background with Gradient-like Tint
+    // We use a solid dark background that matches the app theme
+    doc.setFillColor(32, 32, 36); // Deep Anthracite
 
-    // Draw gradient lines
-    const startColor = [45, 45, 50]; // Lighter top
-    const endColor = [20, 20, 25];   // Darker bottom
-    const steps = 20;
-    const stepHeight = height / steps;
-
-    for (let i = 0; i < steps; i++) {
-        const ratio = i / steps;
-        const r = Math.round(startColor[0] + (endColor[0] - startColor[0]) * ratio);
-        const g = Math.round(startColor[1] + (endColor[1] - startColor[1]) * ratio);
-        const b = Math.round(startColor[2] + (endColor[2] - startColor[2]) * ratio);
-        doc.setFillColor(r, g, b);
-        doc.rect(x, y + (i * stepHeight), width, stepHeight + 0.5, 'F'); // +0.5 to overlap seams
-    }
-    doc.restoreGraphicsState();
-
-    // 3. Unified Blue Border (#00BBF9 - Electric Blue)
+    // 3. Unified Blue Border (#00BBF9)
     doc.setDrawColor(0, 187, 249);
     doc.setLineWidth(0.4);
-    doc.roundedRect(x, y, width, height, 3, 3, 'S');
+
+    // Draw Background + Border
+    doc.roundedRect(x, y, width, height, 3, 3, 'FD');
+
+    // 4. Subtle Top Highlight (Fake Glare)
+    // Draw a thin white line with low opacity just inside top border
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({ opacity: 0.2 }));
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(0.2);
+    // Draw line from x+3 to x+width-3 at y+1 approx
+    // Using a path to stay cleaner if needed, but line is fine
+    // doc.line(x + 3, y + 0.5, x + width - 3, y + 0.5); // Optional, might look like a glitch if not perfect
+    doc.restoreGraphicsState();
 }
 
 function calculateMedianDailyExpense(expenses) {
