@@ -4,7 +4,7 @@
  */
 
 import { getExpenses, getCategories, getProfile } from '../lib/supabase.js';
-import { generateMonthlyReport } from '../lib/pdfReport.js';
+import { generateMonthlyReport } from '../pdf/pdfGenerator.js';
 
 // State
 let currentPeriod = 'current'; // 'current', 'last', 'year'
