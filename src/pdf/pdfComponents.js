@@ -129,7 +129,7 @@ export function createBentoCard(title, value, subtitle = '', accentColor = color
             }
         ],
         width: cardWidth,
-        margin: [0, 0, 10, 0]
+        margin: [0, 0, 15, 0]
     };
 }
 

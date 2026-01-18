@@ -66,19 +66,19 @@ export async function generateMonthlyReport(data) {
             title: 'DÉPENSES',
             value: `${formatNumber(totalExpenses)} €`,
             subtitle: formatVariation(expenseVariation, true),
-            accent: colors.cyan
+            accent: colors.red
         },
         {
             title: 'ÉPARGNE',
             value: `${formatNumber(savings)} €`,
             subtitle: `${savingsRate}% du revenu`,
-            accent: colors.gold
+            accent: colors.green
         },
         {
             title: 'DÉPENSE / JOUR',
             value: `${formatNumber(medianDaily)} €`,
             subtitle: formatVariation(dailyVariation, true),
-            accent: colors.violet
+            accent: colors.cyan
         }
     ];
 

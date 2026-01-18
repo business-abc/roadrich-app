@@ -19,6 +19,7 @@ export const colors = {
     cyan: '#00BBF9',            // Primary accent (KPIs, borders)
     cyanBright: '#00F5D4',      // Positive variations
     gold: '#FFD700',            // Savings/Épargne
+    green: '#00C853',           // Green accent (Savings cards)
     red: '#FF4757',             // Negative variations
     violet: '#9B5DE5',          // Tertiary accent
 
