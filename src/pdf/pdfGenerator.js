@@ -3,9 +3,6 @@
  * Generates Premium Dark Mode Monthly Reports
  */
 
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-
 import { colors, defaultStyle, styles } from './pdfTheme.js';
 import {
     createHeader,
@@ -16,14 +13,28 @@ import {
     createFooter
 } from './pdfComponents.js';
 
-// Initialize pdfMake with fonts
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake is loaded dynamically to avoid blocking app startup
+let pdfMake = null;
+
+async function loadPdfMake() {
+    if (pdfMake) return pdfMake;
+
+    const pdfMakeModule = await import('pdfmake/build/pdfmake');
+    const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+
+    pdfMake = pdfMakeModule.default;
+    pdfMake.vfs = pdfFontsModule.default.pdfMake.vfs;
+
+    return pdfMake;
+}
 
 /**
  * Generates and downloads the monthly expense report
  * @param {object} data - Report data
  */
-export function generateMonthlyReport(data) {
+export async function generateMonthlyReport(data) {
+    // Load pdfmake lazily
+    const pdf = await loadPdfMake();
     const {
         monthName,
         totalExpenses,
@@ -162,7 +173,7 @@ export function generateMonthlyReport(data) {
 
     // Generate and download
     const fileName = `RoadRich_Rapport_${monthName.replace(' ', '_')}.pdf`;
-    pdfMake.createPdf(docDefinition).download(fileName);
+    pdf.createPdf(docDefinition).download(fileName);
 }
 
 // === HELPER FUNCTIONS ===
